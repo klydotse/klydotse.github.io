@@ -1,0 +1,69 @@
+
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>kly – Väder, Pollen och UV</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="brand">kly — Väder, Pollen och UV.</div>
+    <div class="searchWrap">
+      <span class="searchIcon">🔎</span>
+      <input id="searchInput" placeholder="Sök stad" autocomplete="off" />
+      <button id="locBtn" class="locBtn" type="button" title="Använd min position">📍</button>
+      <div id="suggest" class="suggest" role="listbox" aria-label="Sökförslag"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h1 id="cityName" class="cityTitle">Stockholm</h1>
+    <div id="citySub" class="subtle">Stockholms län</div>
+
+    <details class="summary">
+      <summary>
+        <div>
+          UV-index <span class="detailsMeta" id="uvMeta">Nu: — · Risk: —</span>
+        </div>
+        <span class="chev">▼</span>
+      </summary>
+      <div class="content">
+        <div class="uvChartWrap">
+          <svg id="uvChart" aria-label="UV-index över dagen"></svg>
+        </div>
+        <div class="smallNote">Y-axel: UV 0–11+. Riskband färgkodas i bakgrunden.</div>
+      </div>
+    </details>
+
+    <details class="summary">
+      <summary>
+        <div>
+          Pollen <span class="detailsMeta" id="pollenMeta">Sammanfattning: —</span>
+        </div>
+        <span class="chev">▼</span>
+      </summary>
+      <div class="content" id="pollenBox"></div>
+    </details>
+
+    <div class="grid2">
+      <details class="summary">
+        <summary><div>Alla timmar idag</div><span class="chev">▼</span></summary>
+        <div class="content"><div class="smallNote">Kommer tillbaka när vi återinför väderblocket (v8/v9-layout).</div></div>
+      </details>
+
+      <details class="summary">
+        <summary><div>10 dagars prognos</div><span class="chev">▼</span></summary>
+        <div class="content"><div class="smallNote">Kommer tillbaka när vi återinför väderblocket (v8/v9-layout).</div></div>
+      </details>
+    </div>
+
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
