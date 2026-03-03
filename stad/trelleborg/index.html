@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trelleborg – kly</title>
+  <meta name="description" content="Väder, pollen och UV för Trelleborg." />
+  <meta name="theme-color" content="#b9c6d8" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+
+<body data-kly-page="city" data-city-slug="trelleborg">
+  <div class="wrap">
+    <div class="header">
+      <a class="brand" href="/"><span style="font-weight:900">kly</span> <span>— Väder, Pollen och UV.</span></a>
+      <div class="search">
+        <div class="icon">🔎</div>
+        <input id="klySearch" type="search" inputmode="search" placeholder="Sök stad (t.ex. Stockholm)" value="Trelleborg" autocomplete="off" />
+      </div>
+      <button id="klyLocateBtn" class="iconbtn" type="button" title="Använd min position">📍</button>
+    </div>
+
+    <div class="toprow">
+      <div class="citylabel"><span id="klyCityLabel">Trelleborg</span></div>
+      <div></div>
+    </div>
+
+    <div class="hero">
+      <div class="card panel order-weather">
+        <div class="h1">Väder idag</div>
+        <div class="sub" id="wDesc">Laddar…</div>
+
+        <div class="kpi">
+          <div class="big"><span id="wTemp">—</span><span class="unit">°</span></div>
+          <div class="meta">
+            <div id="wFeels">Känns som —</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <span>💧 <span id="wHum">—</span></span>
+          <span>🌬️ <span id="wWind">—</span></span>
+          <span>🌧️ <span id="wRain6">—</span></span>
+        </div>
+
+        <div class="toggle" role="tablist" aria-label="Prognos">
+          <button id="btnHourly" aria-pressed="true" type="button">Timme</button>
+          <button id="btnWeek" aria-pressed="false" type="button">7 dagar</button>
+        </div>
+
+        <div id="secHourly">
+          <div id="wHourly" class="hourly" aria-live="polite"></div>
+        </div>
+
+        <div id="secWeek" style="display:none">
+          <div id="wWeek" class="week" aria-live="polite"></div>
+        </div>
+
+        <div id="dataError" class="notice" style="display:none">Kunde inte hämta data just nu. Prova igen om en stund.</div>
+      </div>
+
+      <div class="card panel order-pollen">
+        <div class="h1">Pollen</div>
+        <div class="sub">Översikt för Trelleborg</div>
+        <div class="notice">Pollen-data kommer snart (placeholder)</div>
+        <div style="margin-top:14px" class="smallmuted">Al · Ambrosia · Björk · Gräs · Gråbo</div>
+      </div>
+
+      <div class="card panel order-uv">
+        <div class="h1">UV-index</div>
+        <div class="sub">Nu och max idag</div>
+
+        <div class="kpi">
+          <div class="big"><span id="uvNow">—</span></div>
+          <div class="meta">
+            <div>Max idag: <span id="uvMax">—</span></div>
+            <div>Risk: <span id="uvRisk">—</span></div>
+          </div>
+        </div>
+
+        <div class="notice" id="uvAdvice">Laddar…</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>© 2026 <a href="https://kly.se">kly.se</a></div>
+      <div>
+        Källor:
+        <a href="https://open-meteo.com/" rel="noopener" target="_blank">Open‑Meteo</a>
+        ·
+        <a href="https://www.smhi.se/" rel="noopener" target="_blank">SMHI</a> (pollen/placeholder)
+      </div>
+    </div>
+  </div>
+
+  <script>
+    try { localStorage.setItem("kly_last_city", "trelleborg"); } catch(e) {}
+  </script>
+  <script src="/assets/app.js"></script>
+</body>
+</html>
