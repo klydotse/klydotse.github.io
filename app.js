@@ -267,7 +267,7 @@ const POLLEN_SEASON_START_RANK = {
   'Gråbo': 7,
   'Ambrosia': 9
 };
-const POLLEN_LEVEL_CODES = { 0: '-', 1: 'L', 2: 'M', 3: 'H', 4: 'H' };
+const POLLEN_LEVEL_CODES = { 0: '-', 1: 'L', 2: 'M', 3: 'H', 4: 'H' , 5: 'H', 6: 'H', 7: 'H'};
 const POLLEN_LEVEL_TEXT = { '-': 'Inga halter', L: 'Låga halter', M: 'Måttliga halter', H: 'Höga halter' };
 const POLLEN_SWEDEN_STATIONS = [
   { name: 'Borlänge', lat: 60.4858, lon: 15.4371 },
