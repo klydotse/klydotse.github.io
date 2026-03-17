@@ -221,7 +221,6 @@ a { color: inherit; }
   gap: 12px;
   margin-bottom: 6px;
 }
-.scroll-label { margin: 0; color: var(--muted); font-size: 0.92rem; }
 .helper { margin: 0 0 12px; color: color-mix(in srgb, var(--muted) 92%, var(--text) 8%); }
 
 .pill {
@@ -732,7 +731,6 @@ body.is-dragging-scroll * {
   .jump-row { gap: 8px; }
   .jump-chip { width: 100%; justify-content: space-between; }
   .section-head { align-items: start; flex-direction: column; }
-  .scroll-label { font-size: 0.88rem; }
   .pill { min-height: 56px; padding: 11px 12px; }
   .pill-text { gap: 2px 5px; }
   .hourly-scroll { padding-right: 14px; }
