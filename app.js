@@ -2,15 +2,18 @@ const INITIAL_PLACE = {
   id: 'stockholm',
   canonical_id: 'stockholm',
   name: 'Stockholm',
-  municipality: 'Stockholm kommun',
+  municipality: 'Stockholm',
   county: 'Stockholms län',
+  region: 'Stockholms län',
   country: 'SE',
+  country_name_sv: 'Sverige',
   type: 'major_city',
   lat: 59.3293,
   lon: 18.0686,
-  aliases: ['Stockholm kommun'],
+  route_slug: 'stockholm',
+  url_slug: 'stockholm',
   label: 'Stockholm · Stockholms län',
-  route_slug: 'stockholm'
+  aliases: []
 };
 
 const DEFAULT_POLLEN_ROWS = [
@@ -32,8 +35,12 @@ const state = {
   selectedIndex: -1,
   results: [],
   requestToken: 0,
-  activePlace: INITIAL_PLACE
+  activePlace: INITIAL_PLACE,
+  weatherCache: new Map(),
+  pollenCache: new Map()
 };
+
+function $(id) { return document.getElementById(id); }
 
 function slugify(value = '') {
   return String(value)
@@ -47,6 +54,21 @@ function slugify(value = '') {
 function getInitialSlug() {
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
   return path === '/' ? 'stockholm' : slugify(path.split('/').pop());
+}
+
+function setText(id, value) {
+  const el = $(id);
+  if (el) el.textContent = value;
+}
+
+function setHtml(id, value) {
+  const el = $(id);
+  if (el) el.innerHTML = value;
+}
+
+function announce(text) {
+  const el = $('routeAnnouncer');
+  if (el) el.textContent = text;
 }
 
 function formatTemp(value) {
@@ -94,9 +116,13 @@ function weatherMeta(code, isNight = false) {
     51: { label: 'Lätt duggregn', icon: 'weather-rain.svg' },
     53: { label: 'Duggregn', icon: 'weather-rain.svg' },
     55: { label: 'Kraftigt duggregn', icon: 'weather-rain.svg' },
+    56: { label: 'Underkylt duggregn', icon: 'weather-snow.svg' },
+    57: { label: 'Underkylt duggregn', icon: 'weather-snow.svg' },
     61: { label: 'Lätt regn', icon: 'weather-rain.svg' },
     63: { label: 'Regn', icon: 'weather-rain.svg' },
     65: { label: 'Kraftigt regn', icon: 'weather-rain.svg' },
+    66: { label: 'Underkylt regn', icon: 'weather-snow.svg' },
+    67: { label: 'Underkylt regn', icon: 'weather-snow.svg' },
     71: { label: 'Lätt snö', icon: 'weather-snow.svg' },
     73: { label: 'Snö', icon: 'weather-snow.svg' },
     75: { label: 'Kraftig snö', icon: 'weather-snow.svg' },
@@ -115,23 +141,9 @@ function weatherMeta(code, isNight = false) {
 
 function windDirection(deg) {
   const dirs = ['N', 'NO', 'O', 'SO', 'S', 'SV', 'V', 'NV'];
-  const index = Math.round(((Number(deg) || 0) % 360) / 45) % 8;
-  return dirs[index];
-}
-
-function setText(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
-}
-
-function setHtml(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.innerHTML = value;
-}
-
-function announce(text) {
-  const el = document.getElementById('routeAnnouncer');
-  if (el) el.textContent = text;
+  const num = Number(deg);
+  if (!Number.isFinite(num)) return '—';
+  return dirs[Math.round((num % 360) / 45) % 8];
 }
 
 function updateMeta(place) {
@@ -153,11 +165,11 @@ function pushPlace(place, replace = false) {
   const slug = slugify(place.route_slug || place.name);
   const target = slug === 'stockholm' ? '/' : `/${slug}/`;
   if (replace) history.replaceState({}, '', target);
-  else history.pushState({}, '', target);
+  else if (window.location.pathname !== target) history.pushState({}, '', target);
 }
 
 function updateStickyOffset() {
-  const header = document.getElementById('siteHeader');
+  const header = $('siteHeader');
   if (!header) return;
   document.documentElement.style.setProperty('--sticky-offset', `${header.offsetHeight + 12}px`);
 }
@@ -178,12 +190,8 @@ function buildHourlyInsight(hourly) {
   return first === last ? `Regn väntas runt ${first}.` : `Regn väntas främst mellan ${first} och ${last}.`;
 }
 
-function peakUvText(uvSeries) {
-  let peak = { time: '12', value: 0 };
-  for (const point of uvSeries) {
-    if (point.value > peak.value) peak = point;
-  }
-  return peak;
+function peakUv(uvSeries) {
+  return uvSeries.reduce((best, point) => point.value > best.value ? point : best, { time: '12', value: 0 });
 }
 
 function renderHero(place, current, daily, hourly, uvPeak) {
@@ -194,7 +202,7 @@ function renderHero(place, current, daily, hourly, uvPeak) {
   setText('heroLead', buildHeroLead(hourly));
   setText('feelsLike', `Känns som ${formatTemp(current.apparent_temperature)}`);
   setText('hiLo', `H ${formatTemp(daily.temperature_2m_max[0])} L ${formatTemp(daily.temperature_2m_min[0])}`);
-  const icon = document.getElementById('heroIcon');
+  const icon = $('heroIcon');
   if (icon) {
     icon.src = `./icons/${meta.icon}`;
     icon.alt = meta.label;
@@ -212,10 +220,13 @@ function renderHourly(hourly) {
   setText('hourlyAccessible', 'Timprognosen visar de kommande 18 timmarna med tid, temperatur, väderläge, nederbörd och vind. Svep sidledes för fler timmar.');
   const html = hourly.map(item => {
     const meta = weatherMeta(item.weather_code, item.isNight);
+    const classes = ['hour-card'];
+    if (item.label === 'Nu') classes.push('now');
+    if ((Number(item.precipitation) || 0) >= 0.3) classes.push('wet');
     return `
-      <article class="hour-card">
+      <article class="${classes.join(' ')}">
         <p class="hour-time">${item.label}</p>
-        <img class="hero-icon" src="./icons/${meta.icon}" alt="${meta.label}">
+        <img class="hour-icon" src="./icons/${meta.icon}" alt="${meta.label}">
         <p class="hour-temp">${formatTemp(item.temperature_2m)}</p>
         <p class="hour-meta">${meta.label}</p>
         <p class="hour-meta">${formatMm(item.precipitation)}</p>
@@ -225,13 +236,22 @@ function renderHourly(hourly) {
   setHtml('hourlyCards', html);
 }
 
-function pollenSymbol(level) {
-  const val = String(level ?? '').toLowerCase().trim();
+function normalizePollenLevel(value) {
+  const val = String(value ?? '').toLowerCase().trim();
   if (!val || val === '-' || val === '0') return '-';
   if (['1','l','low','lag','låg'].includes(val)) return 'L';
   if (['2','m','medium','moderat','måttlig','mattlig'].includes(val)) return 'M';
   if (['3','h','high','hog','hög'].includes(val)) return 'H';
-  return String(level);
+  return String(value);
+}
+
+function normalizePollenType(name = '') {
+  const key = slugify(name).replace(/-/g, '');
+  const map = {
+    al: 'Al', hassel: 'Hassel', alm: 'Alm', bjork: 'Björk', bok: 'Bok', ek: 'Ek',
+    gras: 'Gräs', grabo: 'Gråbo', ambrosia: 'Ambrosia', salgvide: 'Sälg/vide', salg: 'Sälg/vide', vide: 'Sälg/vide'
+  };
+  return map[key] || name;
 }
 
 function renderPollen(rows, summary = '') {
@@ -244,16 +264,14 @@ function renderPollen(rows, summary = '') {
       <td>${row[4]}</td>
     </tr>`).join('');
   setHtml('pollenTableBody', body);
-  const summaryEl = document.getElementById('pollenSummary');
+  const summaryEl = $('pollenSummary');
   if (summary) {
     setText('pollenSummary', summary);
     if (summaryEl) summaryEl.hidden = false;
   } else if (summaryEl) {
     summaryEl.hidden = true;
   }
-  const top = rows
-    .filter(r => ['L','M','H'].includes(r[1]))
-    .sort((a,b)=>({H:3,M:2,L:1}[b[1]]-({H:3,M:2,L:1}[a[1]])))[0];
+  const top = rows.filter(r => ['L','M','H'].includes(r[1])).sort((a,b) => ({H:3,M:2,L:1}[b[1]] - ({H:3,M:2,L:1}[a[1]])))[0];
   setText('insightPollen', top ? `${top[0]} är högst idag.` : 'Låga eller inga pollenhalter idag.');
 }
 
@@ -263,7 +281,7 @@ function renderDaily(daily) {
     return `
       <tr>
         <th scope="row">${dayLabel(item.time, index)}</th>
-        <td class="weather-cell"><img src="./icons/${meta.icon}" alt="${meta.label}" width="22" height="22"></td>
+        <td><div class="weather-cell"><img src="./icons/${meta.icon}" alt="${meta.label}" width="22" height="22"></div></td>
         <td>${formatTemp(item.temperature_2m_max)} / ${formatTemp(item.temperature_2m_min)}</td>
         <td>${formatMm(item.precipitation_sum)}</td>
         <td>${formatWind(item.wind_speed_10m_max)}</td>
@@ -274,20 +292,20 @@ function renderDaily(daily) {
   const cardRows = daily.map((item, index) => {
     const meta = weatherMeta(item.weather_code, false);
     return `
-      <article class="daily-card">
-        <div class="daily-card-top">
-          <strong>${dayLabel(item.time, index)}</strong>
-          <img src="./icons/${meta.icon}" alt="${meta.label}" width="22" height="22">
+      <article class="daily-mobile-card">
+        <img class="daily-mobile-icon" src="./icons/${meta.icon}" alt="${meta.label}" width="24" height="24">
+        <div class="daily-mobile-main">
+          <div class="daily-mobile-day">${dayLabel(item.time, index)}</div>
+          <div class="daily-mobile-meta">${formatMm(item.precipitation_sum)} · ${formatWind(item.wind_speed_10m_max)}</div>
         </div>
-        <div class="daily-card-meta">${formatTemp(item.temperature_2m_max)} / ${formatTemp(item.temperature_2m_min)}</div>
-        <div class="daily-card-meta">${formatMm(item.precipitation_sum)} · ${formatWind(item.wind_speed_10m_max)}</div>
+        <div class="daily-mobile-temp">${formatTemp(item.temperature_2m_max)} / ${formatTemp(item.temperature_2m_min)}</div>
       </article>`;
   }).join('');
   setHtml('dailyCards', cardRows);
 }
 
 function renderUvChart(uvSeries) {
-  const svg = document.getElementById('uvChart');
+  const svg = $('uvChart');
   if (!svg) return;
   const width = 760;
   const height = 260;
@@ -302,40 +320,29 @@ function renderUvChart(uvSeries) {
   const x = i => left + i * xStep;
   const y = v => top + (1 - v / maxY) * plotH;
 
-  const grid = document.querySelector('#uvChart .grid');
-  const thresholds = document.querySelector('#uvChart .thresholds');
-  const axes = document.querySelector('#uvChart .axes');
-  const area = document.querySelector('#uvChart .uv-area');
-  const path = document.querySelector('#uvChart .uv-path');
-  const points = document.querySelector('#uvChart .points');
-  const labels = document.querySelector('#uvChart .labels');
+  const grid = svg.querySelector('.grid');
+  const thresholds = svg.querySelector('.thresholds');
+  const axes = svg.querySelector('.axes');
+  const area = svg.querySelector('.uv-area');
+  const path = svg.querySelector('.uv-path');
+  const points = svg.querySelector('.points');
+  const labels = svg.querySelector('.labels');
 
-  if (grid) {
-    grid.innerHTML = [0,1,2,3,4,5,6].map(v => `<line x1="${left}" y1="${y(v)}" x2="${width-right}" y2="${y(v)}"></line>`).join('');
-  }
-  if (thresholds) {
-    thresholds.innerHTML = `<line x1="${left}" y1="${y(3)}" x2="${width-right}" y2="${y(3)}"></line>`;
-  }
-  if (axes) {
-    axes.innerHTML = `
-      <line x1="${left}" y1="${height-bottom}" x2="${width-right}" y2="${height-bottom}"></line>
-      <line x1="${left}" y1="${top}" x2="${left}" y2="${height-bottom}"></line>`;
-  }
+  if (grid) grid.innerHTML = [0,1,2,3,4,5,6].map(v => `<line x1="${left}" y1="${y(v)}" x2="${width-right}" y2="${y(v)}"></line>`).join('');
+  if (thresholds) thresholds.innerHTML = `<line class="uv-threshold-line" x1="${left}" y1="${y(3)}" x2="${width-right}" y2="${y(3)}"></line>`;
+  if (axes) axes.innerHTML = `<line x1="${left}" y1="${height-bottom}" x2="${width-right}" y2="${height-bottom}"></line><line x1="${left}" y1="${top}" x2="${left}" y2="${height-bottom}"></line>`;
 
-  const lineD = uvSeries.map((d, i) => `${i===0?'M':'L'} ${x(i)} ${y(d.value)}`).join(' ');
-  const areaD = `${lineD} L ${x(uvSeries.length-1)} ${height-bottom} L ${x(0)} ${height-bottom} Z`;
+  const lineD = uvSeries.map((d, i) => `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(d.value)}`).join(' ');
+  const areaD = `${lineD} L ${x(uvSeries.length - 1)} ${height-bottom} L ${x(0)} ${height-bottom} Z`;
   if (path) path.setAttribute('d', lineD);
   if (area) area.setAttribute('d', areaD);
-  if (points) {
-    points.innerHTML = uvSeries.map((d,i)=>`<circle cx="${x(i)}" cy="${y(d.value)}" r="4"></circle>`).join('');
-  }
-  if (labels) {
-    labels.innerHTML = uvSeries.map((d,i)=>`<text x="${x(i)}" y="${height-16}" text-anchor="middle">${d.time}</text>`).join('');
-  }
+  const peak = peakUv(uvSeries);
+  if (points) points.innerHTML = uvSeries.map((d,i)=>`<circle${d.time === peak.time && d.value === peak.value ? ' class="peak"' : ''} cx="${x(i)}" cy="${y(d.value)}" r="4"></circle>`).join('');
+  if (labels) labels.innerHTML = uvSeries.map((d,i)=>`<text x="${x(i)}" y="${height-16}" text-anchor="middle">${d.time}</text>`).join('');
 }
 
 function renderUv(uvSeries) {
-  const peak = peakUvText(uvSeries);
+  const peak = peakUv(uvSeries);
   setText('uvSummary', `Högst idag ${peak.value.toLocaleString('sv-SE', { maximumFractionDigits: 1 })} kl. ${peak.time} · Gäller vid klart väder`);
   setText('uvNote', peak.value >= 3 ? 'Runt UV 3 rekommenderar Strålsäkerhetsmyndigheten att de flesta skyddar sig i solen.' : 'UV är lågt idag, men tänk på att nivån gäller vid klart väder.');
   setText('uvAccessible', `UV är högst runt ${peak.time} och når ${peak.value.toLocaleString('sv-SE', { maximumFractionDigits: 1 })}.`);
@@ -344,6 +351,9 @@ function renderUv(uvSeries) {
 }
 
 async function fetchWeather(place) {
+  const key = `${place.lat},${place.lon}`;
+  const cached = state.weatherCache.get(key);
+  if (cached && Date.now() - cached.time < 5 * 60 * 1000) return cached.data;
   const params = new URLSearchParams({
     latitude: String(place.lat),
     longitude: String(place.lon),
@@ -355,10 +365,15 @@ async function fetchWeather(place) {
   });
   const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`, { cache: 'no-store' });
   if (!res.ok) throw new Error(`Weather ${res.status}`);
-  return res.json();
+  const data = await res.json();
+  state.weatherCache.set(key, { time: Date.now(), data });
+  return data;
 }
 
 async function fetchPollen(place) {
+  const key = `${place.lat},${place.lon}`;
+  const cached = state.pollenCache.get(key);
+  if (cached && Date.now() - cached.time < 30 * 60 * 1000) return cached.data;
   try {
     const stationsRes = await fetch('https://r.jina.ai/http://www.pollenrapporten.se/api/stations', { cache: 'no-store' });
     if (!stationsRes.ok) throw new Error('stations');
@@ -378,28 +393,23 @@ async function fetchPollen(place) {
     const source = Array.isArray(payload) ? payload : (payload.forecasts || payload.data || payload.forecast || []);
     const grouped = new Map();
     for (const item of source) {
-      const name = String(item.species || item.type || item.name || '').trim();
+      const name = normalizePollenType(item.species || item.type || item.name || '');
       if (!name) continue;
-      const key = name
-        .replace('bjork', 'Björk')
-        .replace('Bjork', 'Björk')
-        .replace('gras', 'Gräs')
-        .replace('Gras', 'Gräs')
-        .replace('grabo', 'Gråbo')
-        .replace('Grabo', 'Gråbo')
-        .replace('salg/vide', 'Sälg/vide')
-        .replace('Salg/vide', 'Sälg/vide');
-      if (!grouped.has(key)) grouped.set(key, []);
-      grouped.get(key).push({ date: item.date || item.day || '', level: pollenSymbol(item.level ?? item.value ?? item.classification ?? item.risk) });
+      if (!grouped.has(name)) grouped.set(name, []);
+      grouped.get(name).push({ date: item.date || item.day || '', level: normalizePollenLevel(item.level ?? item.value ?? item.classification ?? item.risk) });
     }
     const rows = DEFAULT_POLLEN_ROWS.map(base => {
       const vals = (grouped.get(base[0]) || []).sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,3).map(x=>x.level);
       while (vals.length < 3) vals.push('-');
       return [base[0], vals[0], vals[1], vals[2], base[4]];
     });
-    return { rows, summary: `Pollenprognos från ${nearest.station.name || 'närmaste station'}.` };
+    const data = { rows, summary: `Pollenprognos från ${nearest.station.name || 'närmaste station'}.` };
+    state.pollenCache.set(key, { time: Date.now(), data });
+    return data;
   } catch {
-    return { rows: DEFAULT_POLLEN_ROWS, summary: '' };
+    const data = { rows: DEFAULT_POLLEN_ROWS, summary: '' };
+    state.pollenCache.set(key, { time: Date.now(), data });
+    return data;
   }
 }
 
@@ -413,7 +423,6 @@ function buildHourlyRows(data) {
     if (dt < currentDate) continue;
     rows.push({
       label: rows.length === 0 ? 'Nu' : String(dt.getHours()).padStart(2, '0'),
-      timeIso: times[i],
       temperature_2m: data.hourly.temperature_2m[i],
       precipitation: data.hourly.precipitation[i],
       weather_code: data.hourly.weather_code[i],
@@ -451,11 +460,14 @@ function buildDailyRows(data) {
   }));
 }
 
+function resolvePlaceFromSlug(slug) {
+  return state.placeIndex.get(slug) || INITIAL_PLACE;
+}
+
 async function renderPlace(place, replaceHistory = false) {
   const token = ++state.requestToken;
   state.activePlace = place;
   updateMeta(place);
-  if (replaceHistory) pushPlace(place, true);
   try {
     const [weather, pollen] = await Promise.all([fetchWeather(place), fetchPollen(place)]);
     if (token !== state.requestToken) return;
@@ -467,11 +479,13 @@ async function renderPlace(place, replaceHistory = false) {
     renderPollen(pollen.rows, pollen.summary);
     renderDaily(buildDailyRows(weather));
     setText('pollenDay2Label', 'Imorgon');
-    setText('pollenDay3Label', dayLabel(new Date(Date.now()+2*864e5).toISOString(), 2));
+    setText('pollenDay3Label', dayLabel(new Date(Date.now() + 2 * 864e5).toISOString(), 2));
     announce(`Visar vädret för ${place.name}`);
     pushPlace(place, replaceHistory);
+    initScrollAffordances();
   } catch (err) {
     if (token !== state.requestToken) return;
+    setText('placeName', place.name);
     setText('heroLead', 'Kunde inte hämta liveprognos just nu.');
     setText('hourlyHint', 'Försök igen om en stund.');
     setText('insightWeather', 'Liveprognosen kunde inte hämtas just nu.');
@@ -480,9 +494,74 @@ async function renderPlace(place, replaceHistory = false) {
   }
 }
 
+function initDragScroll(el) {
+  if (!el || el.dataset.dragReady === 'true') return;
+  el.dataset.dragReady = 'true';
+  el.classList.add('drag-scroll');
+  let isDown = false;
+  let startX = 0;
+  let startScrollLeft = 0;
+
+  el.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    isDown = true;
+    startX = e.pageX;
+    startScrollLeft = el.scrollLeft;
+    el.classList.add('is-dragging');
+    document.body.classList.add('is-dragging-scroll');
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const dx = e.pageX - startX;
+    el.scrollLeft = startScrollLeft - dx;
+  });
+  window.addEventListener('mouseup', () => {
+    isDown = false;
+    el.classList.remove('is-dragging');
+    document.body.classList.remove('is-dragging-scroll');
+  });
+  el.addEventListener('mouseleave', () => {
+    isDown = false;
+    el.classList.remove('is-dragging');
+    document.body.classList.remove('is-dragging-scroll');
+  });
+}
+
+function initScrollAffordances() {
+  const hourlyScroll = $('hourlyScroll');
+  const pollenWrap = $('pollenWrap');
+  if (hourlyScroll) {
+    const refresh = () => {
+      hourlyScroll.classList.toggle('show-left', hourlyScroll.scrollLeft > 4);
+      hourlyScroll.classList.toggle('show-right', hourlyScroll.scrollLeft < hourlyScroll.scrollWidth - hourlyScroll.clientWidth - 4);
+    };
+    if (!hourlyScroll.dataset.affordanceReady) {
+      hourlyScroll.dataset.affordanceReady = 'true';
+      hourlyScroll.addEventListener('scroll', refresh, { passive: true });
+      window.addEventListener('resize', refresh);
+      initDragScroll(hourlyScroll);
+    }
+    refresh();
+  }
+  if (pollenWrap) {
+    const refresh = () => {
+      pollenWrap.classList.toggle('is-scrolled', pollenWrap.scrollLeft > 4);
+      pollenWrap.classList.toggle('show-right', pollenWrap.scrollLeft < pollenWrap.scrollWidth - pollenWrap.clientWidth - 4);
+    };
+    if (!pollenWrap.dataset.affordanceReady) {
+      pollenWrap.dataset.affordanceReady = 'true';
+      pollenWrap.addEventListener('scroll', refresh, { passive: true });
+      window.addEventListener('resize', refresh);
+      initDragScroll(pollenWrap);
+    }
+    refresh();
+  }
+}
+
 async function initSearch() {
-  const input = document.getElementById('searchInput');
-  const resultsEl = document.getElementById('searchResults');
+  const input = $('searchInput');
+  const resultsEl = $('searchResults');
   await window.KlySwedenSearch.loadPlaces([
     './resources/sweden-places.json',
     './resources/sweden-local-areas-seed.json',
@@ -495,6 +574,7 @@ async function initSearch() {
   for (const place of places) {
     state.placeIndex.set(slugify(place.route_slug || place.name), place);
     state.placeIndex.set(slugify(place.name), place);
+    for (const alias of (place.aliases || [])) state.placeIndex.set(slugify(alias), place);
   }
 
   function closeResults() {
@@ -524,8 +604,7 @@ async function initSearch() {
     state.selectedIndex = -1;
     const query = input.value.trim();
     if (query.length < 2) return closeResults();
-    const list = window.KlySwedenSearch.search(query, { limit: 8, minChars: 2 });
-    renderResults(list);
+    renderResults(window.KlySwedenSearch.search(query, { limit: 8, minChars: 2 }));
   });
 
   input.addEventListener('keydown', (e) => {
@@ -553,7 +632,7 @@ async function initSearch() {
 
   const slug = getInitialSlug();
   if (slug !== 'stockholm') {
-    const place = state.placeIndex.get(slug) || INITIAL_PLACE;
+    const place = resolvePlaceFromSlug(slug);
     renderPlace(place, true);
   }
 }
@@ -562,16 +641,16 @@ function initFooterPanels() {
   const buttons = document.querySelectorAll('.footer-link');
   const panels = document.querySelectorAll('.footer-panel');
   const closeAll = () => {
-    panels.forEach(panel => panel.hidden = true);
+    panels.forEach(panel => { panel.hidden = true; });
     buttons.forEach(btn => btn.setAttribute('aria-expanded', 'false'));
   };
   buttons.forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.panel;
-      const panel = document.getElementById(id);
-      const willOpen = panel.hidden;
+      const panel = $(id);
+      const willOpen = panel && panel.hidden;
       closeAll();
-      if (willOpen) {
+      if (panel && willOpen) {
         panel.hidden = false;
         btn.setAttribute('aria-expanded', 'true');
       }
@@ -581,22 +660,18 @@ function initFooterPanels() {
 }
 
 function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  }
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 
 window.addEventListener('resize', updateStickyOffset);
 window.addEventListener('popstate', () => {
-  if (!state.placesLoaded) return;
-  const place = state.placeIndex.get(getInitialSlug()) || INITIAL_PLACE;
+  const place = state.placesLoaded ? resolvePlaceFromSlug(getInitialSlug()) : INITIAL_PLACE;
   renderPlace(place, true);
 });
-
 window.addEventListener('DOMContentLoaded', () => {
   updateStickyOffset();
   initFooterPanels();
   registerServiceWorker();
   renderPlace(INITIAL_PLACE, true);
-  initSearch();
+  initSearch().catch(() => {});
 });
