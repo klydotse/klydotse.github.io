@@ -626,134 +626,23 @@ const DEMO = {
   }
 };
 
-const ICONS = {
-  cloud: './icons/weather-cloud.svg',
-  rain: './icons/weather-rain.svg',
-  sun: './icons/weather-sun.svg',
-  snow: './icons/weather-snow.svg',
-  'clear-night': './icons/weather-night.svg'
-};
+const FALLBACK_PLACES = [
+  { name: 'Stockholm', lat: 59.3293, lon: 18.0686 },
+  { name: 'Göteborg', lat: 57.7089, lon: 11.9746 },
+  { name: 'Malmö', lat: 55.604981, lon: 13.003822 },
+  { name: 'Uppsala', lat: 59.8586, lon: 17.6389 },
+  { name: 'Säfsen', lat: 60.1572, lon: 14.3891 },
+  { name: 'Åre', lat: 63.398, lon: 13.0827 },
+  { name: 'Visby', lat: 57.6348, lon: 18.2948 },
+  { name: 'Helsingborg', lat: 56.0465, lon: 12.6945 },
+  { name: 'Luleå', lat: 65.5848, lon: 22.1547 },
+  { name: 'Umeå', lat: 63.8258, lon: 20.263 },
+  { name: 'Kiruna', lat: 67.8558, lon: 20.2253 },
+  { name: 'Östersund', lat: 63.1767, lon: 14.6361 }
+];
 
-const POLLEN_SEASON = {
-  'Al': 'Feb–maj',
-  'Hassel': 'Feb–jun',
-  'Alm': 'Mar–jun',
-  'Björk': 'Mar–jul',
-  'Bok': 'Maj–jun',
-  'Ek': 'Maj–jul',
-  'Gräs': 'Maj–okt',
-  'Gråbo': 'Jul–okt',
-  'Ambrosia': 'Sep–nov',
-  'Sälg/vide': 'Apr–jul'
-};
-
-const POLLEN_ROW_ORDER = ['Al', 'Hassel', 'Alm', 'Björk', 'Bok', 'Ek', 'Gräs', 'Gråbo', 'Ambrosia', 'Sälg/vide'];
-const POLLEN_FORECAST_DAYS = 3;
-const POLLEN_SEASON_START_RANK = {
-  'Al': 2,
-  'Hassel': 2,
-  'Alm': 3,
-  'Björk': 3,
-  'Bok': 5,
-  'Ek': 5,
-  'Gräs': 5,
-  'Gråbo': 7,
-  'Ambrosia': 9,
-  'Sälg/vide': 4
-};
-const POLLEN_SEASON_END_RANK = {
-  'Al': 5,
-  'Hassel': 6,
-  'Alm': 6,
-  'Björk': 7,
-  'Bok': 6,
-  'Ek': 7,
-  'Gräs': 10,
-  'Gråbo': 10,
-  'Ambrosia': 11,
-  'Sälg/vide': 7
-};
-
-const OPEN_METEO_CODE_MAP = {
-  0: { label: 'Klart', icon: 'sun' },
-  1: { label: 'Mest klart', icon: 'sun' },
-  2: { label: 'Växlande molnighet', icon: 'cloud' },
-  3: { label: 'Mulet', icon: 'cloud' },
-  45: { label: 'Dimma', icon: 'cloud' },
-  48: { label: 'Dimma', icon: 'cloud' },
-  51: { label: 'Lätt duggregn', icon: 'rain' },
-  53: { label: 'Duggregn', icon: 'rain' },
-  55: { label: 'Kraftigt duggregn', icon: 'rain' },
-  56: { label: 'Underkylt duggregn', icon: 'snow' },
-  57: { label: 'Underkylt duggregn', icon: 'snow' },
-  61: { label: 'Lätt regn', icon: 'rain' },
-  63: { label: 'Regn', icon: 'rain' },
-  65: { label: 'Kraftigt regn', icon: 'rain' },
-  66: { label: 'Underkylt regn', icon: 'snow' },
-  67: { label: 'Underkylt regn', icon: 'snow' },
-  71: { label: 'Lätt snö', icon: 'snow' },
-  73: { label: 'Snö', icon: 'snow' },
-  75: { label: 'Kraftig snö', icon: 'snow' },
-  77: { label: 'Snökorn', icon: 'snow' },
-  80: { label: 'Lätta skurar', icon: 'rain' },
-  81: { label: 'Skurar', icon: 'rain' },
-  82: { label: 'Kraftiga skurar', icon: 'rain' },
-  85: { label: 'Lätta snöbyar', icon: 'snow' },
-  86: { label: 'Snöbyar', icon: 'snow' },
-  95: { label: 'Åska', icon: 'rain' },
-  96: { label: 'Åska med hagel', icon: 'snow' },
-  99: { label: 'Åska med hagel', icon: 'snow' }
-};
-
-const POLLEN_LEVEL_LABELS = {
-  0: '-',
-  1: 'L',
-  2: 'M',
-  3: 'H'
-};
-
-const UV_ALERT_THRESHOLD = 3;
-const UV_HEADLINE_CLEAR_SKY = 'Prognosen gäller vid klart väder.';
-const POLLEN_API_URL = 'https://www.pollenrapporten.se/api/forecast';
-const POLLEN_STATION_API_URL = 'https://www.pollenrapporten.se/api/stations';
-const POLLEN_PROXY = 'https://r.jina.ai/http://www.pollenrapporten.se/api/forecast';
-const POLLEN_STATION_PROXY = 'https://r.jina.ai/http://www.pollenrapporten.se/api/stations';
-const LIVE_TTL_MS = 5 * 60 * 1000;
-const GEOCODE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
-const REMOTE_SEARCH_TTL_MS = 6 * 60 * 60 * 1000;
-const DEWPOINT_COMFORT_LABELS = {
-  veryDry: 'Torr luft',
-  dry: 'Lite torrt',
-  comfortable: 'Skön luft',
-  humid: 'Fuktigt',
-  muggy: 'Klibbigt',
-  oppressive: 'Tung luft'
-};
-
-const AIR_COMFORT_LABELS = {
-  crisp: 'Krispig luft',
-  dry: 'Torr luft',
-  neutral: 'Neutral luft',
-  humid: 'Fuktig luft',
-  muggy: 'Klibbig luft',
-  oppressive: 'Tung luft'
-};
-
-const state = {
-  slug: 'stockholm',
-  selectedIndex: -1,
-  results: [],
-  places: [],
-  placeIndex: new Map(),
-  liveCache: new Map(),
-  geocodeCache: new Map(),
-  remoteSearchCache: new Map(),
-  pollenForecastCache: new Map(),
-  pollenMetaPromise: null,
-  renderToken: 0,
-  searchToken: 0,
-  activePlace: null
-};
+const DAY_NAMES = ['Sön', 'Mån', 'Tis', 'Ons', 'Tors', 'Fre', 'Lör'];
+const state = { slug: 'stockholm', selectedIndex: -1, results: [], places: [], placeIndex: new Map(), liveCache: new Map(), geocodeCache: new Map(), remoteSearchCache: new Map(), pollenForecastCache: new Map(), pollenMetaPromise: null, renderToken: 0, searchToken: 0, activePlace: null };
 
 const DEFAULT_PLACE = {
   id: 'stockholm',
@@ -773,117 +662,11 @@ const DEFAULT_PLACE = {
   aliases: []
 };
 
-function slugify(value = '') {
-  return String(value)
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .toLowerCase();
-}
-
-function capitalize(value = '') {
-  return value ? value.charAt(0).toUpperCase() + value.slice(1) : '';
-}
-
-function formatTemp(value) {
-  const rounded = Math.round(Number(value) || 0);
-  return `${rounded > 0 ? '' : ''}${rounded}°`;
-}
-
-function formatPrecip(value) {
-  const numeric = Number(value) || 0;
-  if (numeric <= 0) return '0 mm';
-  if (numeric < 1) return `${numeric.toFixed(1).replace('.', ',')} mm`;
-  return `${Math.round(numeric * 10) / 10} mm`.replace('.', ',');
-}
-
-function formatHourLabel(hour) {
-  if (hour === 'Nu') return 'Nu';
-  const numeric = Number(hour);
-  if (Number.isNaN(numeric)) return String(hour);
-  return `${String(numeric).padStart(2, '0')}`;
-}
-
-function weatherMetaFromCode(code, isNight = false) {
-  const meta = OPEN_METEO_CODE_MAP[code] || OPEN_METEO_CODE_MAP[3];
-  if (isNight && meta.icon === 'sun') {
-    return { ...meta, icon: 'clear-night', label: 'Klart' };
-  }
-  return meta;
-}
-
-function windDirectionFromDegrees(degrees) {
-  if (degrees === null || Number.isNaN(Number(degrees))) return '–';
-  const dirs = ['N', 'NO', 'O', 'SO', 'S', 'SV', 'V', 'NV'];
-  const index = Math.round(((Number(degrees) % 360) / 45)) % 8;
-  return dirs[index];
-}
-
-function formatSunTime(date = new Date()) {
-  return new Intl.DateTimeFormat('sv-SE', {
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date);
-}
-
-function formatShortDay(date = new Date()) {
-  return new Intl.DateTimeFormat('sv-SE', {
-    weekday: 'short'
-  }).format(date).replace('.', '');
-}
-
-function formatDayLabel(date, index) {
-  if (index === 0) return 'Idag';
-  if (index === 1) return 'Imorgon';
-  const label = formatShortDay(date);
-  return capitalize(label);
-}
-
-function normalizePlaceFolded(value = '') {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9]+/g, ' ')
-    .trim()
-    .toLowerCase();
-}
-
-function uniqueArray(values = []) {
-  return [...new Set(values.filter(Boolean))];
-}
-
-function getDisplayRegion(place = {}) {
-  return place.county || place.region || place.admin1 || place.state || '';
-}
-
-function getCountryName(place = {}) {
-  return place.country_name_sv || place.country_name || place.country || '';
-}
-
-function buildPlaceLabel(place = {}) {
-  if (place.label) return place.label;
-  const pieces = [place.name, getDisplayRegion(place), getCountryName(place)].filter(Boolean);
-  return uniqueArray(pieces).join(' · ');
-}
-
-function getPlaceSlug(place = {}) {
-  return place.route_slug || place.url_slug || slugify(place.name || '');
-}
-
-function buildPlaceIndex(places = []) {
-  const index = new Map();
-  places.forEach((place) => {
-    const slug = getPlaceSlug(place);
-    if (slug) index.set(slug, place);
-    const nameSlug = slugify(place.name || '');
-    if (nameSlug && !index.has(nameSlug)) index.set(nameSlug, place);
-    (place.aliases || []).forEach((alias) => {
-      const aliasSlug = slugify(alias);
-      if (aliasSlug && !index.has(aliasSlug)) index.set(aliasSlug, place);
-    });
-  });
-  return index;
+function slugify(value) {
+  return String(value || '').toLowerCase().trim()
+    .replace(/å/g, 'a').replace(/ä/g, 'a').replace(/ö/g, 'o')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 function getInitialSlug() {
@@ -891,344 +674,392 @@ function getInitialSlug() {
   return path === '/' ? 'stockholm' : slugify(path.split('/').pop());
 }
 
-function updatePageTitle(place) {
-  const locationName = place?.name || 'Stockholm';
-  document.title = `Kly.se – vädret i ${locationName}`;
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
 }
 
-function updateMetaDescription(place, current) {
-  const description = document.querySelector('meta[name="description"]');
-  if (!description) return;
-  const temp = current ? `${Math.round(current.temperature_2m)}°` : '';
-  const weather = current ? weatherMetaFromCode(current.weather_code, Boolean(current.is_day) === false).label.toLowerCase() : 'väder';
-  description.setAttribute(
-    'content',
-    `Väder, pollen och UV för ${place?.name || 'Stockholm'} – snabbt, tydligt och utan reklam.${temp ? ` Just nu ${temp} och ${weather}.` : ''}`
-  );
+function setHtml(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = value;
 }
 
-function updateCanonical(place) {
-  const canonical = document.querySelector('link[rel="canonical"]');
-  if (!canonical) return;
-  const slug = getPlaceSlug(place) || 'stockholm';
-  const url = new URL(window.location.href);
-  url.pathname = slug === 'stockholm' ? '/' : `/${slug}/`;
-  url.search = '';
-  url.hash = '';
-  canonical.setAttribute('href', url.toString());
+function formatDecimalSv(value) {
+  return Number(value || 0).toLocaleString('sv-SE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
 
-function pushPlaceUrl(place, replace = false) {
-  const slug = getPlaceSlug(place) || 'stockholm';
-  const url = slug === 'stockholm' ? '/' : `/${slug}/`;
-  if (replace) {
-    window.history.replaceState({ slug }, '', url);
-  } else if (window.location.pathname !== url) {
-    window.history.pushState({ slug }, '', url);
-  }
+function formatRoundedSv(value) {
+  return Math.round(Number(value || 0)).toLocaleString('sv-SE');
 }
 
-function setHeroName(name) {
-  const hero = document.getElementById('placeName');
-  if (hero) hero.textContent = name || 'Stockholm';
+function formatTemp(value) {
+  const rounded = Math.round(Number(value || 0));
+  return `${rounded > 0 ? rounded : rounded}°`;
 }
 
-function setUpdatedAt(timestamp = new Date()) {
-  const el = document.getElementById('updatedAt');
-  if (!el) return;
-  el.textContent = `Uppdaterad ${formatSunTime(new Date(timestamp))}`;
+function formatPercent(value) {
+  return `${formatRoundedSv(value)} %`;
 }
 
-function setLoadingState(isLoading) {
-  const root = document.documentElement;
-  root.classList.toggle('is-loading', Boolean(isLoading));
+function formatPrecipMm(value) {
+  const num = Number(value || 0);
+  if (num === 0) return '0 mm';
+  if (num < 1) return `${formatDecimalSv(num)} mm`;
+  return `${num.toLocaleString('sv-SE', { maximumFractionDigits: 1 })} mm`;
 }
 
-function getDomRefs() {
-  return {
-    currentTemp: document.getElementById('currentTemp'),
-    currentWeather: document.getElementById('currentWeather'),
-    currentFeels: document.getElementById('currentFeels'),
-    currentHighLow: document.getElementById('currentHighLow'),
-    currentHumidity: document.getElementById('currentHumidity'),
-    insightPrecipLabel: document.getElementById('insightPrecipLabel'),
-    insightPrecipMetric: document.getElementById('insightPrecipMetric'),
-    insightWind: document.getElementById('insightWind'),
-    insightDaylight: document.getElementById('insightDaylight'),
-    insightUvLabel: document.getElementById('insightUvLabel'),
-    insightUvValue: document.getElementById('insightUvValue'),
-    insightAirLabel: document.getElementById('insightAirLabel'),
-    insightAirValue: document.getElementById('insightAirValue'),
-    hourlyHint: document.getElementById('hourlyHint'),
-    hourlyGrid: document.getElementById('hourlyGrid'),
-    uvSummary: document.getElementById('uvSummary'),
-    uvChart: document.getElementById('uvChart'),
-    uvPeak: document.getElementById('uvPeak'),
-    uvAlert: document.getElementById('uvAlert'),
-    pollenTableBody: document.getElementById('pollenTableBody'),
-    pollenMeta: document.getElementById('pollenMeta'),
-    dailyTableBody: document.getElementById('dailyTableBody')
-  };
+function formatPrecipRangeMm(values) {
+  const nums = values.map((v) => Number(v || 0));
+  const min = Math.min(...nums);
+  const max = Math.max(...nums);
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return '0 mm';
+  if (max < 0.05) return '0 mm';
+  if (Math.abs(max - min) < 0.15) return formatPrecipMm(max);
+  return `${formatDecimalSv(min)}–${formatDecimalSv(max)} mm`;
 }
 
-function renderCurrentConditions(live, refs) {
-  const current = live.current;
-  refs.currentTemp.textContent = formatTemp(current.temperature_2m);
-  refs.currentWeather.textContent = weatherMetaFromCode(current.weather_code, Boolean(current.is_day) === false).label;
-  refs.currentFeels.textContent = formatTemp(current.apparent_temperature);
-  refs.currentHighLow.textContent = `${formatTemp(live.dailyToday.temperature_2m_max)} / ${formatTemp(live.dailyToday.temperature_2m_min)}`;
-  refs.currentHumidity.textContent = `${Math.round(current.relative_humidity_2m)} %`;
+function normalizePlaceFolded(value = '') {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/[^a-zA-Z0-9]+/g, ' ')
+    .trim()
+    .toLowerCase();
 }
 
-function buildAirComfort(current) {
-  const humidity = Number(current.relative_humidity_2m);
-  const temperature = Number(current.temperature_2m);
-  const dewpoint = Number(current.dew_point_2m);
-
-  if (!Number.isFinite(humidity) || !Number.isFinite(temperature)) {
-    return { label: AIR_COMFORT_LABELS.neutral, value: '–' };
-  }
-
-  const apparentGap = Number.isFinite(current.apparent_temperature)
-    ? Math.round(current.temperature_2m - current.apparent_temperature)
-    : 0;
-
-  if (Number.isFinite(dewpoint)) {
-    if (dewpoint >= 20) return { label: AIR_COMFORT_LABELS.oppressive, value: `${Math.round(dewpoint)}° daggpunkt` };
-    if (dewpoint >= 16) return { label: AIR_COMFORT_LABELS.muggy, value: `${Math.round(dewpoint)}° daggpunkt` };
-    if (dewpoint >= 11) return { label: AIR_COMFORT_LABELS.humid, value: `${Math.round(dewpoint)}° daggpunkt` };
-    if (dewpoint >= 4) return { label: AIR_COMFORT_LABELS.neutral, value: `${Math.round(dewpoint)}° daggpunkt` };
-    if (dewpoint >= 0) return { label: AIR_COMFORT_LABELS.dry, value: `${Math.round(dewpoint)}° daggpunkt` };
-    return { label: AIR_COMFORT_LABELS.crisp, value: `${Math.round(dewpoint)}° daggpunkt` };
-  }
-
-  if (humidity >= 82 && temperature >= 20) return { label: AIR_COMFORT_LABELS.oppressive, value: `${Math.round(humidity)} % luftfuktighet` };
-  if (humidity >= 72 && temperature >= 16) return { label: AIR_COMFORT_LABELS.muggy, value: `${Math.round(humidity)} % luftfuktighet` };
-  if (humidity >= 66 && temperature >= 10) return { label: AIR_COMFORT_LABELS.humid, value: `${Math.round(humidity)} % luftfuktighet` };
-  if (humidity <= 35 && temperature <= 6) return { label: AIR_COMFORT_LABELS.crisp, value: `${Math.round(humidity)} % luftfuktighet` };
-  if (humidity <= 42) return { label: AIR_COMFORT_LABELS.dry, value: `${Math.round(humidity)} % luftfuktighet` };
-  if (apparentGap >= 3 && humidity <= 50) return { label: AIR_COMFORT_LABELS.dry, value: `${Math.round(humidity)} % luftfuktighet` };
-  return { label: AIR_COMFORT_LABELS.neutral, value: `${Math.round(humidity)} % luftfuktighet` };
+function getPlaceSlug(place = {}) {
+  return slugify(place.route_slug || place.url_slug || place.name || 'stockholm');
 }
 
-function renderInsights(live, refs) {
-  const today = live.dailyToday;
-  const current = live.current;
-  const precip = Number(today.precipitation_sum) || 0;
-  const daylight = `Dagsljus ${live.sunriseTime}–${live.sunsetTime}`;
-  const wind = `${windDirectionFromDegrees(current.wind_direction_10m)} ${Math.round(current.wind_speed_10m)} m/s`;
-  const { label: airLabel, value: airValue } = buildAirComfort(current);
-
-  refs.insightPrecipLabel.textContent = precip > 0.1 ? 'Nederbörd idag' : 'Torrt idag';
-  refs.insightPrecipMetric.textContent = precip > 0.1 ? formatPrecip(precip) : '';
-  refs.insightWind.textContent = wind;
-  refs.insightDaylight.textContent = daylight;
-  refs.insightUvLabel.textContent = live.uvPeak.value >= UV_ALERT_THRESHOLD ? 'UV måttligt' : 'UV lågt';
-  refs.insightUvValue.textContent = String(live.uvPeak.value).replace('.', ',');
-  if (refs.insightAirLabel) refs.insightAirLabel.textContent = airLabel;
-  if (refs.insightAirValue) refs.insightAirValue.textContent = airValue;
+function buildPlaceLabel(place = {}) {
+  if (place.label) return place.label;
+  const region = place.county || place.region || place.admin1 || '';
+  const country = place.country_name_sv || place.country_name || place.country || '';
+  return [place.name, region, country].filter(Boolean).join(' · ');
 }
 
-function renderHourly(live, refs) {
-  refs.hourlyHint.textContent = live.hourlyHint;
-  refs.hourlyGrid.innerHTML = '';
-  live.hourly.forEach(([time, temp, weather, precip, wind, icon]) => {
-    const card = document.createElement('article');
-    card.className = 'hour-card';
-    card.innerHTML = `
-      <p class="hour-time">${formatHourLabel(time)}</p>
-      <img class="weather-icon weather-icon--small" src="${ICONS[icon] || ICONS.cloud}" alt="" loading="lazy" />
-      <p class="hour-temp">${formatTemp(temp)}</p>
-      <p class="hour-meta">${weather}</p>
-      <p class="hour-meta">${formatPrecip(precip)}</p>
-      <p class="hour-meta">${Math.round(Number(wind) || 0)} m/s</p>
-    `;
-    refs.hourlyGrid.appendChild(card);
+function buildPlaceIndex(places = []) {
+  const index = new Map();
+  places.forEach((place) => {
+    const slug = getPlaceSlug(place);
+    if (slug) index.set(slug, place);
+    if (place.name) index.set(slugify(place.name), place);
+    (place.aliases || []).forEach((alias) => {
+      if (alias) index.set(slugify(alias), place);
+    });
   });
-}
-
-function buildUvPoints(series = []) {
-  if (!series.length) return [];
-  const max = Math.max(...series.map(([, value]) => Number(value) || 0), 1);
-  const width = 100;
-  const height = 48;
-  const step = width / Math.max(series.length - 1, 1);
-  return series.map(([label, value], index) => {
-    const x = index * step;
-    const normalized = (Number(value) || 0) / max;
-    const y = height - normalized * height;
-    return { x, y, label, value: Number(value) || 0 };
-  });
-}
-
-function renderUv(live, refs) {
-  refs.uvSummary.textContent = live.uvSummary;
-  refs.uvPeak.textContent = `Högst idag ${String(live.uvPeak.value).replace('.', ',')}, kl. ${live.uvPeak.time}`;
-  refs.uvAlert.hidden = live.uvPeak.value < UV_ALERT_THRESHOLD;
-  if (!live.uvPeak.clearSky) {
-    refs.uvPeak.textContent += ' · uppskattat';
-  }
-
-  const points = buildUvPoints(live.uv);
-  const line = points.map((point) => `${point.x},${point.y}`).join(' ');
-  const circles = points.map(
-    (point) => `<circle cx="${point.x}" cy="${point.y}" r="2.5"></circle>`
-  ).join('');
-  const labels = points.map((point) => {
-    const labelY = 62;
-    return `<text x="${point.x}" y="${labelY}" text-anchor="middle">${point.label}</text>`;
-  }).join('');
-
-  refs.uvChart.innerHTML = `
-    <svg viewBox="-4 -4 108 72" aria-hidden="true" role="img">
-      <line x1="0" y1="48" x2="100" y2="48" class="uv-axis"></line>
-      <polyline points="${line}" class="uv-line"></polyline>
-      ${circles}
-      ${labels}
-    </svg>
-  `;
-}
-
-function normalizePollenSymbol(value) {
-  if (value === null || value === undefined) return '-';
-  const normalized = String(value).trim();
-  if (!normalized) return '-';
-  if (POLLEN_LEVEL_LABELS[normalized] !== undefined) return POLLEN_LEVEL_LABELS[normalized];
-  if (['-', 'L', 'M', 'H'].includes(normalized)) return normalized;
-  const lowered = normalized.toLowerCase();
-  if (['low', 'låg', 'lag'].includes(lowered)) return 'L';
-  if (['medium', 'medel', 'moderate'].includes(lowered)) return 'M';
-  if (['high', 'hög', 'hog'].includes(lowered)) return 'H';
-  return normalized.toUpperCase();
-}
-
-function pollenSymbolClass(symbol) {
-  return {
-    '-': 'pollen-dot pollen-dot--none',
-    L: 'pollen-dot pollen-dot--low',
-    M: 'pollen-dot pollen-dot--medium',
-    H: 'pollen-dot pollen-dot--high'
-  }[symbol] || 'pollen-dot pollen-dot--none';
-}
-
-function renderPollen(live, refs) {
-  refs.pollenTableBody.innerHTML = '';
-  const seasonRank = new Date().getMonth() + 1;
-  const activeRows = live.pollen.filter(([name, today]) => {
-    const symbol = normalizePollenSymbol(today);
-    const start = POLLEN_SEASON_START_RANK[name] || 1;
-    const end = POLLEN_SEASON_END_RANK[name] || 12;
-    return symbol !== '-' || (seasonRank >= start && seasonRank <= end);
-  });
-
-  const sortWeight = { H: 3, M: 2, L: 1, '-': 0 };
-  activeRows.sort((a, b) => {
-    const aToday = sortWeight[normalizePollenSymbol(a[1])] || 0;
-    const bToday = sortWeight[normalizePollenSymbol(b[1])] || 0;
-    if (bToday !== aToday) return bToday - aToday;
-    return POLLEN_ROW_ORDER.indexOf(a[0]) - POLLEN_ROW_ORDER.indexOf(b[0]);
-  });
-
-  activeRows.forEach(([name, today, tomorrow, day3, day4]) => {
-    const row = document.createElement('tr');
-    const symbols = [today, tomorrow, day3, day4].map(normalizePollenSymbol);
-    row.innerHTML = `
-      <th scope="row">${name}</th>
-      ${symbols.map((symbol) => `<td><span class="${pollenSymbolClass(symbol)}">${symbol}</span></td>`).join('')}
-    `;
-    refs.pollenTableBody.appendChild(row);
-  });
-
-  refs.pollenMeta.textContent = live.pollenMeta;
-}
-
-function renderDaily(live, refs) {
-  refs.dailyTableBody.innerHTML = '';
-  live.daily.forEach(([day, weather, icon, temp, precip, wind]) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <th scope="row">${day}</th>
-      <td><img class="weather-icon weather-icon--small" src="${ICONS[icon] || ICONS.cloud}" alt="" loading="lazy" /></td>
-      <td>${temp}</td>
-      <td>${precip}</td>
-      <td>${wind}</td>
-    `;
-    refs.dailyTableBody.appendChild(row);
-  });
-}
-
-function renderDemo(place) {
-  const key = getPlaceSlug(place);
-  const live = DEMO[key] || DEMO.stockholm;
-  const refs = getDomRefs();
-  setHeroName(place?.name || live.name);
-  updatePageTitle(place);
-  updateMetaDescription(place, null);
-  updateCanonical(place);
-  setUpdatedAt(new Date());
-  refs.currentTemp.textContent = formatTemp(live.now.temp);
-  refs.currentWeather.textContent = live.now.weather;
-  refs.currentFeels.textContent = formatTemp(live.now.feels);
-  refs.currentHighLow.textContent = `${formatTemp(live.now.high)} / ${formatTemp(live.now.low)}`;
-  refs.currentHumidity.textContent = `${live.now.humidity} %`;
-  refs.insightPrecipLabel.textContent = live.insights.precipLabel;
-  refs.insightPrecipMetric.textContent = live.insights.precipMetric;
-  refs.insightWind.textContent = `${live.insights.windDir} ${live.insights.windSpeed} m/s`;
-  refs.insightDaylight.textContent = live.insights.daylight;
-  refs.insightUvLabel.textContent = live.insights.uvLabel;
-  refs.insightUvValue.textContent = live.insights.uvValue;
-  if (refs.insightAirLabel) refs.insightAirLabel.textContent = 'Neutral luft';
-  if (refs.insightAirValue) refs.insightAirValue.textContent = `${live.now.humidity} % luftfuktighet`;
-  refs.hourlyHint.textContent = live.hourlyHint;
-  refs.uvSummary.textContent = live.uvSummary;
-  const peak = live.uv.reduce((best, item) => Number(item[1]) > Number(best[1]) ? item : best, live.uv[0] || ['13', 0]);
-  refs.uvPeak.textContent = `Högst idag ${String(peak[1]).replace('.', ',')}, kl. ${peak[0]}`;
-  refs.uvAlert.hidden = Number(peak[1]) < UV_ALERT_THRESHOLD;
-  renderHourly(live, refs);
-  renderUv({ uv: live.uv, uvPeak: { value: Number(peak[1]) || 0, time: peak[0], clearSky: true }, uvSummary: live.uvSummary }, refs);
-  renderPollen({ pollen: live.pollen, pollenMeta: 'Pollenprognos från demo.' }, refs);
-  renderDaily(live, refs);
+  return index;
 }
 
 function updateStickyOffset() {
   const header = document.querySelector('.site-header');
-  const sticky = document.querySelector('.jump-links');
-  if (!header || !sticky) return;
-  const offset = header.offsetHeight + 12;
-  document.documentElement.style.setProperty('--sticky-offset', `${offset}px`);
+  const jumpLinks = document.querySelector('.jump-links');
+  if (!header || !jumpLinks) return;
+  const value = header.offsetHeight + 12;
+  document.documentElement.style.setProperty('--sticky-offset', `${value}px`);
 }
 
-function roundCoordinate(value) {
-  return Number(Number(value).toFixed(4));
+function weatherMeta(code, isNight = false) {
+  const mapping = {
+    0: { label: 'Klart', icon: isNight ? 'clear-night' : 'sun' },
+    1: { label: 'Mest klart', icon: isNight ? 'clear-night' : 'sun' },
+    2: { label: 'Växlande molnighet', icon: 'cloud' },
+    3: { label: 'Mulet', icon: 'cloud' },
+    45: { label: 'Dimma', icon: 'cloud' },
+    48: { label: 'Dimma', icon: 'cloud' },
+    51: { label: 'Lätt duggregn', icon: 'rain' },
+    53: { label: 'Duggregn', icon: 'rain' },
+    55: { label: 'Kraftigt duggregn', icon: 'rain' },
+    56: { label: 'Underkylt duggregn', icon: 'snow' },
+    57: { label: 'Underkylt duggregn', icon: 'snow' },
+    61: { label: 'Lätt regn', icon: 'rain' },
+    63: { label: 'Regn', icon: 'rain' },
+    65: { label: 'Kraftigt regn', icon: 'rain' },
+    66: { label: 'Underkylt regn', icon: 'snow' },
+    67: { label: 'Underkylt regn', icon: 'snow' },
+    71: { label: 'Lätt snö', icon: 'snow' },
+    73: { label: 'Snö', icon: 'snow' },
+    75: { label: 'Kraftig snö', icon: 'snow' },
+    77: { label: 'Snökorn', icon: 'snow' },
+    80: { label: 'Lätta skurar', icon: 'rain' },
+    81: { label: 'Skurar', icon: 'rain' },
+    82: { label: 'Kraftiga skurar', icon: 'rain' },
+    85: { label: 'Lätta snöbyar', icon: 'snow' },
+    86: { label: 'Snöbyar', icon: 'snow' },
+    95: { label: 'Åska', icon: 'rain' },
+    96: { label: 'Åska med hagel', icon: 'snow' },
+    99: { label: 'Åska med hagel', icon: 'snow' }
+  };
+  return mapping[code] || { label: 'Mulet', icon: 'cloud' };
 }
 
-function makeLiveCacheKey(place) {
-  return `${roundCoordinate(place.lat)}:${roundCoordinate(place.lon)}`;
+function iconPath(name) {
+  const map = {
+    cloud: './icons/weather-cloud.svg',
+    rain: './icons/weather-rain.svg',
+    sun: './icons/weather-sun.svg',
+    snow: './icons/weather-snow.svg',
+    'clear-night': './icons/weather-night.svg'
+  };
+  return map[name] || map.cloud;
 }
 
-async function fetchJsonWithFallback(urls = [], fetchOptions = {}) {
-  let lastError;
-  for (const url of urls) {
-    try {
-      const response = await fetch(url, fetchOptions);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      lastError = error;
-    }
+function formatTime(iso, timeZone = 'auto') {
+  try {
+    const date = new Date(iso);
+    return new Intl.DateTimeFormat('sv-SE', {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: timeZone === 'auto' ? undefined : timeZone
+    }).format(date);
+  } catch {
+    return '—';
   }
-  throw lastError || new Error('Kunde inte hämta data');
 }
 
-function buildForecastUrl(place) {
+function formatUvPeak(uvSeries = []) {
+  let peak = { value: 0, time: '12' };
+  uvSeries.forEach((entry) => {
+    if (Number(entry.value) > peak.value) peak = { value: Number(entry.value), time: entry.time };
+  });
+  return peak;
+}
+
+function windDirectionLabel(deg) {
+  const value = Number(deg);
+  if (!Number.isFinite(value)) return '—';
+  const dirs = ['N', 'NO', 'O', 'SO', 'S', 'SV', 'V', 'NV'];
+  const index = Math.round(value / 45) % 8;
+  return dirs[index];
+}
+
+function getWeatherMessage(hourly = []) {
+  const rainyHours = hourly.filter((item) => item.precip >= 0.3);
+  if (!rainyHours.length) return 'Torrt större delen av dagen.';
+  const start = rainyHours[0].time;
+  const end = rainyHours[rainyHours.length - 1].time;
+  if (start === end) return `Nederbörd väntas runt ${start}.`;
+  return `Nederbörd väntas främst mellan ${start} och ${end}.`;
+}
+
+function setLocationMeta(place) {
+  const pageTitle = place?.name ? `Kly.se – vädret i ${place.name}` : 'Kly.se – vädret';
+  document.title = pageTitle;
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) {
+    const url = new URL(window.location.href);
+    const slug = getPlaceSlug(place);
+    url.pathname = slug === 'stockholm' ? '/' : `/${slug}/`;
+    url.search = '';
+    canonical.href = url.toString();
+  }
+  const desc = document.querySelector('meta[name="description"]');
+  if (desc) {
+    desc.setAttribute('content', `Väder, pollen och UV för ${place?.name || 'Stockholm'} – snabbt, tydligt och utan reklam.`);
+  }
+}
+
+function getFallbackBySlug(slug) {
+  return DEMO[slug] || DEMO.stockholm;
+}
+
+function pushRoute(urlSlug, replace = false) {
+  const target = urlSlug === 'stockholm' ? '/' : `/${urlSlug}/`;
+  if (replace) {
+    history.replaceState({}, '', target);
+  } else if (window.location.pathname !== target) {
+    history.pushState({}, '', target);
+  }
+}
+
+function renderCurrentCard(nowData) {
+  setText('currentTemp', formatTemp(nowData.temp));
+  setText('currentWeather', nowData.weather);
+  setText('currentFeels', formatTemp(nowData.feels));
+  setText('currentHighLow', `${formatTemp(nowData.high)} / ${formatTemp(nowData.low)}`);
+  setText('currentHumidity', formatPercent(nowData.humidity));
+}
+
+function renderHero(placeName, heroLead, updatedLabel) {
+  setText('placeName', placeName || 'Stockholm');
+  setText('heroLead', heroLead || '');
+  setText('updatedAt', updatedLabel || '');
+}
+
+function renderInsights(insights) {
+  setText('insightPrecipLabel', insights.precipLabel || 'Torrt idag');
+  setText('insightPrecipMetric', insights.precipMetric || '');
+  setText('insightWind', `${insights.windDir || '—'} ${formatRoundedSv(insights.windSpeed || 0)} m/s`);
+  setText('insightDaylight', insights.daylight || '');
+  setText('insightUvLabel', insights.uvLabel || 'UV lågt');
+  setText('insightUvValue', insights.uvValue || '0');
+  setText('insightAirLabel', insights.airLabel || 'Neutral luft');
+  setText('insightAirValue', insights.airValue || '—');
+}
+
+function renderHourly(hourlyHint, hourly) {
+  setText('hourlyHint', hourlyHint || '');
+  const html = hourly.map((item) => `
+    <article class="hour-card">
+      <p class="hour-time">${item.time}</p>
+      <img class="weather-icon weather-icon--small" src="${iconPath(item.icon)}" alt="">
+      <p class="hour-temp">${formatTemp(item.temp)}</p>
+      <p class="hour-meta">${item.weather}</p>
+      <p class="hour-meta">${formatPrecipMm(item.precip)}</p>
+      <p class="hour-meta">${formatRoundedSv(item.wind)} m/s</p>
+    </article>
+  `).join('');
+  setHtml('hourlyGrid', html);
+}
+
+function renderUv(uvSummary, uvSeries, peak) {
+  setText('uvSummary', uvSummary || '');
+  setText('uvPeak', `Högst idag ${formatDecimalSv(peak.value)}, kl. ${peak.time}`);
+
+  const alertEl = document.getElementById('uvAlert');
+  if (alertEl) {
+    alertEl.hidden = !(Number(peak.value) >= 3);
+  }
+
+  const width = 320;
+  const height = 120;
+  const padding = 24;
+  const maxValue = Math.max(3.5, ...uvSeries.map((d) => Number(d.value || 0)));
+  const stepX = uvSeries.length > 1 ? (width - padding * 2) / (uvSeries.length - 1) : 0;
+
+  const points = uvSeries.map((entry, index) => {
+    const x = padding + index * stepX;
+    const y = height - padding - (Number(entry.value || 0) / maxValue) * (height - padding * 2);
+    return { x, y, label: entry.time, value: entry.value };
+  });
+
+  const polyline = points.map((p) => `${p.x},${p.y}`).join(' ');
+  const pointDots = points.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3"></circle>`).join('');
+  const xLabels = points.map((p) => `<text x="${p.x}" y="${height - 4}" text-anchor="middle">${p.label}</text>`).join('');
+
+  const svg = `
+    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="UV-index över dagen">
+      <line class="uv-axis" x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}"></line>
+      <polyline class="uv-line" fill="none" points="${polyline}"></polyline>
+      ${pointDots}
+      ${xLabels}
+    </svg>
+  `;
+  setHtml('uvChart', svg);
+}
+
+function renderPollen(pollen, pollenMeta) {
+  const rows = pollen.map((row) => {
+    const [type, today, d1, d2, d3] = row;
+    return `
+      <tr>
+        <th scope="row">${type}</th>
+        <td>${today}</td>
+        <td>${d1}</td>
+        <td>${d2}</td>
+        <td>${d3}</td>
+      </tr>
+    `;
+  }).join('');
+  setHtml('pollenTableBody', rows);
+  setText('pollenMeta', pollenMeta || '');
+}
+
+function renderDaily(daily) {
+  const rows = daily.map((item) => {
+    const [day, weather, icon, temp, precip, wind] = item;
+    return `
+      <tr>
+        <th scope="row">${day}</th>
+        <td><img class="weather-icon weather-icon--small" src="${iconPath(icon)}" alt="${weather}"></td>
+        <td>${temp}</td>
+        <td>${precip}</td>
+        <td>${wind}</td>
+      </tr>
+    `;
+  }).join('');
+  setHtml('dailyTableBody', rows);
+}
+
+function renderDataForPlace(place, data, urlSlug, updateHistory) {
+  const nowData = data.now;
+  renderHero(
+    place?.name || data.name || 'Stockholm',
+    data.heroLead || '',
+    data.updatedAt || ''
+  );
+  renderCurrentCard(nowData);
+  renderInsights(data.insights || {});
+  renderHourly(data.hourlyHint || '', data.hourly || []);
+  renderUv(data.uvSummary || '', data.uvSeries || [], data.uvPeak || { value: 0, time: '12' });
+  renderPollen(data.pollen || [], data.pollenMeta || '');
+  renderDaily(data.daily || []);
+
+  setLocationMeta(place || { name: data.name, route_slug: urlSlug });
+  if (updateHistory === true) {
+    pushRoute(urlSlug, false);
+  } else if (updateHistory === false) {
+    pushRoute(urlSlug, true);
+  }
+}
+
+function buildDemoRenderPayload(place, fallback, updatedLabel = 'Visar reservdata.') {
+  const uvPeak = fallback.uv.reduce((best, current) => Number(current[1]) > Number(best[1]) ? current : best, fallback.uv[0] || ['12', 0]);
+  return {
+    name: fallback.name,
+    heroLead: updatedLabel,
+    updatedAt: '',
+    now: {
+      temp: fallback.now.temp,
+      weather: fallback.now.weather,
+      feels: fallback.now.feels,
+      high: fallback.now.high,
+      low: fallback.now.low,
+      humidity: fallback.now.humidity
+    },
+    insights: {
+      precipLabel: fallback.insights.precipLabel,
+      precipMetric: fallback.insights.precipMetric,
+      windDir: fallback.insights.windDir,
+      windSpeed: fallback.insights.windSpeed,
+      daylight: fallback.insights.daylight,
+      uvLabel: fallback.insights.uvLabel,
+      uvValue: fallback.insights.uvValue,
+      airLabel: 'Neutral luft',
+      airValue: `${fallback.now.humidity} % luftfuktighet`
+    },
+    hourlyHint: fallback.hourlyHint,
+    hourly: fallback.hourly.map(([time, temp, weather, precip, wind, icon]) => ({ time, temp, weather, precip, wind, icon })),
+    uvSummary: fallback.uvSummary,
+    uvSeries: fallback.uv.map(([time, value]) => ({ time, value })),
+    uvPeak: { time: uvPeak[0], value: Number(uvPeak[1]) || 0 },
+    pollen: fallback.pollen,
+    pollenMeta: 'Reservdata visas just nu.',
+    daily: fallback.daily
+  };
+}
+
+function buildLocalSearchFallback(name = '') {
+  const folded = normalizePlaceFolded(name);
+  return FALLBACK_PLACES.find((place) => normalizePlaceFolded(place.name) === folded)
+    || FALLBACK_PLACES.find((place) => normalizePlaceFolded(place.name).startsWith(folded))
+    || FALLBACK_PLACES[0];
+}
+
+async function fetchForecastJson(place) {
+  const cacheKey = `${Number(place.lat).toFixed(4)},${Number(place.lon).toFixed(4)}`;
+  const cached = state.liveCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < 5 * 60 * 1000) {
+    return cached.data;
+  }
+
   const params = new URLSearchParams({
     latitude: String(place.lat),
     longitude: String(place.lon),
     current: [
       'temperature_2m',
-      'relative_humidity_2m',
       'apparent_temperature',
-      'precipitation',
+      'relative_humidity_2m',
       'weather_code',
       'is_day',
       'wind_speed_10m',
@@ -1237,7 +1068,6 @@ function buildForecastUrl(place) {
     ].join(','),
     hourly: [
       'temperature_2m',
-      'precipitation_probability',
       'precipitation',
       'weather_code',
       'wind_speed_10m',
@@ -1245,9 +1075,9 @@ function buildForecastUrl(place) {
       'uv_index'
     ].join(','),
     daily: [
-      'weather_code',
       'temperature_2m_max',
       'temperature_2m_min',
+      'weather_code',
       'precipitation_sum',
       'wind_speed_10m_max',
       'sunrise',
@@ -1257,358 +1087,394 @@ function buildForecastUrl(place) {
     forecast_days: '10',
     timezone: 'auto'
   });
-  return `https://api.open-meteo.com/v1/forecast?${params.toString()}`;
+
+  const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`Forecast HTTP ${response.status}`);
+  const json = await response.json();
+  state.liveCache.set(cacheKey, { timestamp: Date.now(), data: json });
+  return json;
 }
 
-async function fetchLiveWeather(place) {
-  const cacheKey = makeLiveCacheKey(place);
-  const cached = state.liveCache.get(cacheKey);
-  if (cached && Date.now() - cached.timestamp < LIVE_TTL_MS) return cached.data;
-
-  const url = buildForecastUrl(place);
-  const response = await fetchJsonWithFallback([url], { cache: 'no-store' });
-
-  const hourlyData = response.hourly || {};
-  const dailyData = response.daily || {};
-  const current = response.current || {};
-  const today = 0;
-
-  const hourly = [];
-  const now = new Date(response.current?.time || Date.now());
-  const times = hourlyData.time || [];
-  for (let i = 0; i < times.length && hourly.length < 18; i += 1) {
-    const hourDate = new Date(times[i]);
-    if (hourDate < now) continue;
-    const isNight = Number(hourlyData.is_day?.[i]) === 0;
-    const meta = weatherMetaFromCode(hourlyData.weather_code?.[i], isNight);
-    hourly.push([
-      hourly.length === 0 ? 'Nu' : String(hourDate.getHours()).padStart(2, '0'),
-      hourlyData.temperature_2m?.[i],
-      meta.label,
-      hourlyData.precipitation?.[i],
-      hourlyData.wind_speed_10m?.[i],
-      meta.icon
-    ]);
-  }
-
-  const uv = [];
-  for (let i = 0; i < times.length; i += 1) {
-    const date = new Date(times[i]);
-    if (date.toDateString() !== now.toDateString()) continue;
-    const hour = date.getHours();
-    if ([6, 9, 12, 13, 15, 18, 21].includes(hour)) {
-      uv.push([String(hour).padStart(2, '0'), Number(hourlyData.uv_index?.[i] || 0)]);
-    }
-  }
-  if (!uv.length) {
-    uv.push(['12', Number(dailyData.uv_index_max?.[0] || 0)]);
-  }
-  const uvPeakPoint = uv.reduce((best, point) => (point[1] > best[1] ? point : best), uv[0] || ['12', 0]);
-  const uvPeak = {
-    value: Math.round((Number(uvPeakPoint?.[1]) || 0) * 10) / 10,
-    time: uvPeakPoint?.[0] || '12',
-    clearSky: true
-  };
-
-  const daily = (dailyData.time || []).slice(0, 10).map((iso, index) => {
-    const date = new Date(iso);
-    const meta = weatherMetaFromCode(dailyData.weather_code?.[index], false);
-    const max = dailyData.temperature_2m_max?.[index];
-    const min = dailyData.temperature_2m_min?.[index];
-    const precip = dailyData.precipitation_sum?.[index];
-    const wind = dailyData.wind_speed_10m_max?.[index];
-    return [
-      formatDayLabel(date, index),
-      meta.label,
-      meta.icon,
-      `${formatTemp(max)} / ${formatTemp(min)}`,
-      formatPrecip(precip),
-      `${Math.round(Number(wind) || 0)} m/s`
-    ];
-  });
-
-  const data = {
-    current,
-    dailyToday: {
-      temperature_2m_max: dailyData.temperature_2m_max?.[today],
-      temperature_2m_min: dailyData.temperature_2m_min?.[today],
-      precipitation_sum: dailyData.precipitation_sum?.[today]
-    },
-    sunriseTime: dailyData.sunrise?.[today] ? formatSunTime(new Date(dailyData.sunrise[today])) : '–',
-    sunsetTime: dailyData.sunset?.[today] ? formatSunTime(new Date(dailyData.sunset[today])) : '–',
-    hourly,
-    hourlyHint: buildHourlyHint(hourly),
-    uv,
-    uvPeak,
-    uvSummary: buildUvSummary(uvPeak),
-    daily
-  };
-
-  state.liveCache.set(cacheKey, { timestamp: Date.now(), data });
-  return data;
-}
-
-function buildHourlyHint(hourly = []) {
-  const rainy = hourly.filter(([, , weather, precip]) => Number(precip) > 0.2 || /regn|snö/i.test(weather));
-  if (!rainy.length) return 'Torrt större delen av dagen.';
-  const start = rainy[0]?.[0];
-  const end = rainy[rainy.length - 1]?.[0];
-  if (start === end) return `Nederbörd väntas runt ${start}.`;
-  return `Nederbörd väntas främst mellan ${start} och ${end}.`;
-}
-
-function buildUvSummary(uvPeak) {
-  if (uvPeak.value >= 6) return 'UV är högt mitt på dagen.';
-  if (uvPeak.value >= 3) return 'UV ligger på måttlig nivå mitt på dagen.';
-  return 'UV är lågt idag.';
-}
-
-async function ensurePollenMeta() {
+async function fetchPollenStations() {
   if (state.pollenMetaPromise) return state.pollenMetaPromise;
-  state.pollenMetaPromise = fetchJsonWithFallback([POLLEN_STATION_API_URL, POLLEN_STATION_PROXY], { cache: 'no-store' })
-    .catch(() => []);
+  state.pollenMetaPromise = (async () => {
+    try {
+      const res = await fetch('https://www.pollenrapporten.se/api/stations', { cache: 'no-store' });
+      if (!res.ok) throw new Error('Pollen station fetch failed');
+      return await res.json();
+    } catch {
+      try {
+        const res = await fetch('https://r.jina.ai/http://www.pollenrapporten.se/api/stations', { cache: 'no-store' });
+        if (!res.ok) throw new Error('Pollen station proxy fetch failed');
+        return await res.json();
+      } catch {
+        return [];
+      }
+    }
+  })();
   return state.pollenMetaPromise;
 }
 
-function haversineDistance(aLat, aLon, bLat, bLon) {
-  const toRad = (value) => (value * Math.PI) / 180;
+function haversineKm(aLat, aLon, bLat, bLon) {
+  const toRad = (deg) => deg * Math.PI / 180;
   const R = 6371;
   const dLat = toRad(bLat - aLat);
   const dLon = toRad(bLon - aLon);
   const lat1 = toRad(aLat);
   const lat2 = toRad(bLat);
-  const sinLat = Math.sin(dLat / 2);
-  const sinLon = Math.sin(dLon / 2);
-  const value = sinLat * sinLat + Math.cos(lat1) * Math.cos(lat2) * sinLon * sinLon;
-  return 2 * R * Math.atan2(Math.sqrt(value), Math.sqrt(1 - value));
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function normalizePollenSpeciesName(value = '') {
-  const name = String(value || '').trim().toLowerCase();
+function normalizePollenType(name = '') {
+  const folded = normalizePlaceFolded(name).replace(/\s+/g, '');
   const map = {
     al: 'Al',
     hassel: 'Hassel',
     alm: 'Alm',
     bjork: 'Björk',
-    björk: 'Björk',
     bok: 'Bok',
     ek: 'Ek',
     gras: 'Gräs',
-    gräs: 'Gräs',
     grabo: 'Gråbo',
-    gråbo: 'Gråbo',
     ambrosia: 'Ambrosia',
     salgvide: 'Sälg/vide',
-    sälgvide: 'Sälg/vide',
-    sälg/vide: 'Sälg/vide',
-    salgvidepollen: 'Sälg/vide'
+    salg: 'Sälg/vide',
+    vide: 'Sälg/vide'
   };
-  return map[name] || capitalize(name);
+  return map[folded] || name;
 }
 
-function extractPollenForecast(payload) {
-  if (!payload) return [];
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload.forecasts)) return payload.forecasts;
-  if (Array.isArray(payload.data)) return payload.data;
-  if (payload.forecast && Array.isArray(payload.forecast)) return payload.forecast;
-  return [];
+function normalizePollenLevel(value) {
+  const folded = normalizePlaceFolded(String(value || ''));
+  if (!folded || folded === '-' || folded === '0') return '-';
+  if (['1', 'lag', 'low', 'l'].includes(folded)) return 'L';
+  if (['2', 'medel', 'medium', 'm', 'moderat', 'moderate'].includes(folded)) return 'M';
+  if (['3', 'hog', 'high', 'h'].includes(folded)) return 'H';
+  return String(value || '-');
 }
 
-function resolveNearestPollenStation(place, stations = []) {
-  if (!stations.length) return null;
-  return stations.reduce((best, station) => {
-    const stationLat = Number(station.latitude ?? station.lat);
-    const stationLon = Number(station.longitude ?? station.lon);
-    if (!Number.isFinite(stationLat) || !Number.isFinite(stationLon)) return best;
-    const distance = haversineDistance(place.lat, place.lon, stationLat, stationLon);
-    if (!best || distance < best.distance) {
-      return { station, distance };
-    }
-    return best;
-  }, null);
-}
-
-function buildPollenRowsFromForecast(entries = []) {
+function extractPollenRowsFromApi(payload) {
+  const source = Array.isArray(payload) ? payload : (payload?.forecasts || payload?.data || payload?.forecast || []);
   const grouped = new Map();
 
-  entries.forEach((entry) => {
-    const species = normalizePollenSpeciesName(entry.species || entry.type || entry.name);
-    if (!species || !POLLEN_ROW_ORDER.includes(species)) return;
-    const date = entry.date || entry.day || entry.valid_date || entry.forecast_date;
-    const rank = date ? new Date(date).getTime() : grouped.get(species)?.length || 0;
-    const levelRaw = entry.level ?? entry.value ?? entry.classification ?? entry.risk;
-    const level = normalizePollenSymbol(levelRaw);
-
-    if (!grouped.has(species)) grouped.set(species, []);
-    grouped.get(species).push({ rank, level });
+  source.forEach((entry) => {
+    const name = normalizePollenType(entry.species || entry.type || entry.name || '');
+    if (!name) return;
+    if (!grouped.has(name)) grouped.set(name, []);
+    grouped.get(name).push({
+      date: entry.date || entry.day || entry.valid_date || '',
+      level: normalizePollenLevel(entry.level ?? entry.value ?? entry.classification ?? entry.risk)
+    });
   });
 
-  const defaultRows = POLLEN_ROW_ORDER.map((species) => [species, '-', '-', '-', '-']);
-  if (!grouped.size) return defaultRows;
+  const order = ['Al', 'Hassel', 'Alm', 'Björk', 'Bok', 'Ek', 'Gräs', 'Gråbo', 'Ambrosia', 'Sälg/vide'];
 
-  return POLLEN_ROW_ORDER.map((species) => {
-    const days = (grouped.get(species) || [])
-      .sort((a, b) => a.rank - b.rank)
-      .slice(0, POLLEN_FORECAST_DAYS + 1)
+  return order.map((type) => {
+    const entries = (grouped.get(type) || [])
+      .sort((a, b) => String(a.date).localeCompare(String(b.date)))
+      .slice(0, 4)
       .map((item) => item.level);
-    while (days.length < POLLEN_FORECAST_DAYS + 1) days.push('-');
-    return [species, ...days];
+
+    while (entries.length < 4) entries.push('-');
+    return [type, ...entries];
   });
 }
 
-async function fetchPollenForecast(place) {
-  const cacheKey = makeLiveCacheKey(place);
+async function fetchPollenData(place) {
+  const cacheKey = `${Number(place.lat).toFixed(4)},${Number(place.lon).toFixed(4)}`;
   const cached = state.pollenForecastCache.get(cacheKey);
-  if (cached && Date.now() - cached.timestamp < LIVE_TTL_MS) return cached.data;
+  if (cached && Date.now() - cached.timestamp < 5 * 60 * 1000) return cached.data;
 
-  try {
-    const stations = await ensurePollenMeta();
-    const nearest = resolveNearestPollenStation(place, stations);
-    if (!nearest?.station) throw new Error('Ingen pollenstation hittades');
-
-    const stationId = nearest.station.id || nearest.station.station_id || nearest.station.stationId;
-    const params = new URLSearchParams({ station: String(stationId) });
-    const payload = await fetchJsonWithFallback(
-      [`${POLLEN_API_URL}?${params.toString()}`, `${POLLEN_PROXY}?${params.toString()}`],
-      { cache: 'no-store' }
-    );
-
-    const forecast = extractPollenForecast(payload);
-    const pollen = buildPollenRowsFromForecast(forecast);
-    const stationName = nearest.station.name || nearest.station.station_name || 'närmaste station';
-    const distanceKm = Math.round(nearest.distance);
-    const data = {
-      pollen,
-      pollenMeta: `Pollenprognos från ${stationName}${distanceKm ? ` · ca ${distanceKm} km bort` : ''}.`
-    };
+  const stations = await fetchPollenStations();
+  if (!Array.isArray(stations) || !stations.length) {
+    const data = { rows: getFallbackBySlug(getPlaceSlug(place)).pollen, meta: 'Pollenprognos kunde inte hämtas just nu.' };
     state.pollenForecastCache.set(cacheKey, { timestamp: Date.now(), data });
     return data;
-  } catch (error) {
-    const fallback = DEMO[getPlaceSlug(place)]?.pollen || DEMO.stockholm.pollen;
-    return {
-      pollen: fallback,
-      pollenMeta: 'Pollenprognos kunde inte hämtas just nu.'
-    };
   }
+
+  const nearest = stations.reduce((best, station) => {
+    const lat = Number(station.latitude ?? station.lat);
+    const lon = Number(station.longitude ?? station.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return best;
+    const distance = haversineKm(place.lat, place.lon, lat, lon);
+    if (!best || distance < best.distance) return { station, distance };
+    return best;
+  }, null);
+
+  if (!nearest?.station) {
+    const data = { rows: getFallbackBySlug(getPlaceSlug(place)).pollen, meta: 'Pollenprognos kunde inte hämtas just nu.' };
+    state.pollenForecastCache.set(cacheKey, { timestamp: Date.now(), data });
+    return data;
+  }
+
+  const stationId = nearest.station.id || nearest.station.station_id || nearest.station.stationId;
+  const urls = [
+    `https://www.pollenrapporten.se/api/forecast?station=${stationId}`,
+    `https://r.jina.ai/http://www.pollenrapporten.se/api/forecast?station=${stationId}`
+  ];
+
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('Pollen forecast request failed');
+      const payload = await res.json();
+      const rows = extractPollenRowsFromApi(payload);
+      const stationName = nearest.station.name || nearest.station.station_name || 'närmaste station';
+      const meta = `Pollenprognos från ${stationName}${nearest.distance ? ` · ca ${Math.round(nearest.distance)} km bort` : ''}.`;
+      const data = { rows, meta };
+      state.pollenForecastCache.set(cacheKey, { timestamp: Date.now(), data });
+      return data;
+    } catch {
+      // try next
+    }
+  }
+
+  const data = { rows: getFallbackBySlug(getPlaceSlug(place)).pollen, meta: 'Pollenprognos kunde inte hämtas just nu.' };
+  state.pollenForecastCache.set(cacheKey, { timestamp: Date.now(), data });
+  return data;
+}
+
+function buildAirComfort(current) {
+  const humidity = Number(current.relative_humidity_2m);
+  const dew = Number(current.dew_point_2m);
+  if (Number.isFinite(dew)) {
+    if (dew >= 18) return { label: 'Tung luft', value: `${formatRoundedSv(dew)}° daggpunkt` };
+    if (dew >= 14) return { label: 'Fuktig luft', value: `${formatRoundedSv(dew)}° daggpunkt` };
+    if (dew >= 8) return { label: 'Neutral luft', value: `${formatRoundedSv(dew)}° daggpunkt` };
+    if (dew >= 2) return { label: 'Lite torrt', value: `${formatRoundedSv(dew)}° daggpunkt` };
+    return { label: 'Torr luft', value: `${formatRoundedSv(dew)}° daggpunkt` };
+  }
+  if (humidity >= 75) return { label: 'Fuktig luft', value: `${formatPercent(humidity)}` };
+  if (humidity <= 35) return { label: 'Torr luft', value: `${formatPercent(humidity)}` };
+  return { label: 'Neutral luft', value: `${formatPercent(humidity)}` };
+}
+
+function buildRenderPayloadFromLive(place, json, pollenData) {
+  const current = json.current || {};
+  const daily = json.daily || {};
+  const hourly = json.hourly || {};
+  const fallback = getFallbackBySlug(getPlaceSlug(place));
+
+  const currentMeta = weatherMeta(Number(current.weather_code), Number(current.is_day) === 0);
+  const high = Number(daily.temperature_2m_max?.[0] ?? fallback.now.high);
+  const low = Number(daily.temperature_2m_min?.[0] ?? fallback.now.low);
+
+  const heroLead = 'Liveprognos för vald plats.';
+  const updatedAt = `Uppdaterad ${new Intl.DateTimeFormat('sv-SE', {
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(new Date())}`;
+
+  const daylight = `Dagsljus ${formatTime(daily.sunrise?.[0])}–${formatTime(daily.sunset?.[0])}`;
+  const precipToday = Number(daily.precipitation_sum?.[0] || 0);
+  const uvMax = Number(daily.uv_index_max?.[0] || 0);
+  const air = buildAirComfort(current);
+
+  const hourlyRows = [];
+  const currentHour = new Date(current.time || Date.now()).getHours();
+  const currentDate = new Date(current.time || Date.now()).toDateString();
+
+  for (let i = 0; i < (hourly.time || []).length && hourlyRows.length < 18; i += 1) {
+    const date = new Date(hourly.time[i]);
+    if (date.toDateString() !== currentDate) continue;
+    if (date.getHours() < currentHour) continue;
+
+    const meta = weatherMeta(Number(hourly.weather_code?.[i]), Number(hourly.is_day?.[i]) === 0);
+    hourlyRows.push({
+      time: hourlyRows.length === 0 ? 'Nu' : String(date.getHours()).padStart(2, '0'),
+      temp: Number(hourly.temperature_2m?.[i] || 0),
+      weather: meta.label,
+      precip: Number(hourly.precipitation?.[i] || 0),
+      wind: Number(hourly.wind_speed_10m?.[i] || 0),
+      icon: meta.icon
+    });
+  }
+
+  const uvWanted = new Set(['06', '09', '12', '13', '15', '18', '21']);
+  const uvSeries = [];
+  for (let i = 0; i < (hourly.time || []).length; i += 1) {
+    const date = new Date(hourly.time[i]);
+    if (date.toDateString() !== currentDate) continue;
+    const label = String(date.getHours()).padStart(2, '0');
+    if (!uvWanted.has(label)) continue;
+    uvSeries.push({ time: label, value: Number(hourly.uv_index?.[i] || 0) });
+  }
+  if (!uvSeries.length) {
+    uvSeries.push({ time: '12', value: uvMax });
+  }
+  const uvPeak = formatUvPeak(uvSeries);
+
+  const dailyRows = [];
+  for (let i = 0; i < Math.min((daily.time || []).length, 10); i += 1) {
+    const date = new Date(daily.time[i]);
+    const dayLabel = i === 0 ? 'Idag' : i === 1 ? 'Imorgon' : DAY_NAMES[date.getDay()];
+    const meta = weatherMeta(Number(daily.weather_code?.[i]), false);
+    dailyRows.push([
+      dayLabel,
+      meta.label,
+      meta.icon,
+      `${formatTemp(daily.temperature_2m_max?.[i])} / ${formatTemp(daily.temperature_2m_min?.[i])}`,
+      formatPrecipMm(daily.precipitation_sum?.[i]),
+      `${formatRoundedSv(daily.wind_speed_10m_max?.[i])} m/s`
+    ]);
+  }
+
+  return {
+    name: place.name,
+    heroLead,
+    updatedAt,
+    now: {
+      temp: Number(current.temperature_2m ?? fallback.now.temp),
+      weather: currentMeta.label,
+      feels: Number(current.apparent_temperature ?? fallback.now.feels),
+      high,
+      low,
+      humidity: Number(current.relative_humidity_2m ?? fallback.now.humidity)
+    },
+    insights: {
+      precipLabel: precipToday > 0.1 ? 'Nederbörd idag' : 'Torrt idag',
+      precipMetric: precipToday > 0.1 ? formatPrecipMm(precipToday) : '',
+      windDir: windDirectionLabel(current.wind_direction_10m),
+      windSpeed: Number(current.wind_speed_10m || 0),
+      daylight,
+      uvLabel: uvMax >= 3 ? 'UV måttligt' : 'UV lågt',
+      uvValue: formatDecimalSv(uvMax),
+      airLabel: air.label,
+      airValue: air.value
+    },
+    hourlyHint: getWeatherMessage(hourlyRows),
+    hourly: hourlyRows,
+    uvSummary: uvMax >= 3 ? 'UV ligger på måttlig nivå mitt på dagen.' : 'UV är lågt idag.',
+    uvSeries,
+    uvPeak,
+    pollen: pollenData.rows,
+    pollenMeta: pollenData.meta,
+    daily: dailyRows
+  };
 }
 
 async function geocodePlace(query) {
-  const folded = normalizePlaceFolded(query);
-  const cached = state.geocodeCache.get(folded);
-  if (cached && Date.now() - cached.timestamp < GEOCODE_TTL_MS) return cached.data;
+  const key = normalizePlaceFolded(query);
+  const cached = state.geocodeCache.get(key);
+  if (cached && Date.now() - cached.timestamp < 6 * 60 * 60 * 1000) {
+    return cached.data;
+  }
 
   const params = new URLSearchParams({
     name: query,
-    count: '10',
+    count: '8',
     language: 'sv',
     format: 'json'
   });
 
-  const payload = await fetchJsonWithFallback([
-    `https://geocoding-api.open-meteo.com/v1/search?${params.toString()}`
-  ], { cache: 'force-cache' });
+  const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${params.toString()}`, { cache: 'force-cache' });
+  if (!res.ok) throw new Error('Geocoding request failed');
+  const json = await res.json();
 
-  const results = (payload.results || []).map((item) => ({
-    id: item.id ? String(item.id) : `${slugify(item.name)}-${slugify(item.country_code || item.country || '')}`,
-    canonical_id: item.id ? String(item.id) : `${slugify(item.name)}-${slugify(item.country_code || item.country || '')}`,
+  const data = (json.results || []).map((item) => ({
+    id: item.id,
+    canonical_id: item.id,
     name: item.name,
-    municipality: item.admin2 || item.admin3 || '',
+    municipality: item.admin2 || '',
     county: item.admin1 || '',
     region: item.admin1 || '',
-    admin1: item.admin1 || '',
-    country: item.country_code || item.country || '',
+    country: item.country_code || '',
     country_name_sv: item.country || '',
     type: item.feature_code || 'city',
     lat: item.latitude,
     lon: item.longitude,
     route_slug: slugify(item.name),
     url_slug: slugify(item.name),
-    label: uniqueArray([item.name, item.admin1, item.country]).join(' · '),
+    label: [item.name, item.admin1, item.country].filter(Boolean).join(' · '),
     aliases: []
   }));
 
-  state.geocodeCache.set(folded, { timestamp: Date.now(), data: results });
-  return results;
+  state.geocodeCache.set(key, { timestamp: Date.now(), data });
+  return data;
 }
 
 async function searchRemotePlaces(query, { limit = 8 } = {}) {
-  const folded = normalizePlaceFolded(query);
-  const cached = state.remoteSearchCache.get(folded);
-  if (cached && Date.now() - cached.timestamp < REMOTE_SEARCH_TTL_MS) return cached.data.slice(0, limit);
-
+  const key = normalizePlaceFolded(query);
+  const cached = state.remoteSearchCache.get(key);
+  if (cached && Date.now() - cached.timestamp < 6 * 60 * 60 * 1000) {
+    return cached.data.slice(0, limit);
+  }
   try {
-    const remote = await geocodePlace(query);
-    const prepared = remote.slice(0, limit).map((place) => ({
-      ...place,
-      label: buildPlaceLabel(place),
-      url_slug: getPlaceSlug(place)
-    }));
-    state.remoteSearchCache.set(folded, { timestamp: Date.now(), data: prepared });
-    return prepared;
-  } catch (error) {
+    const results = await geocodePlace(query);
+    state.remoteSearchCache.set(key, { timestamp: Date.now(), data: results });
+    return results.slice(0, limit);
+  } catch {
     return [];
   }
 }
 
-function resolvePlaceFromSlug(slug = 'stockholm') {
+function resolvePlaceFromSlug(slug) {
   if (slug === 'stockholm') return state.placeIndex.get('stockholm') || DEFAULT_PLACE;
   return state.placeIndex.get(slug) || DEFAULT_PLACE;
 }
 
-async function renderPlace(place, pushState = false) {
+async function renderPlace(place, updateHistory) {
   const token = ++state.renderToken;
-  const refs = getDomRefs();
-  const safePlace = place || DEFAULT_PLACE;
-  state.activePlace = safePlace;
-  state.slug = getPlaceSlug(safePlace) || 'stockholm';
-
-  setHeroName(safePlace.name || 'Stockholm');
-  updatePageTitle(safePlace);
-  updateCanonical(safePlace);
-  if (pushState) {
-    pushPlaceUrl(safePlace, false);
-  } else {
-    pushPlaceUrl(safePlace, true);
-  }
-
-  setLoadingState(true);
+  const urlSlug = getPlaceSlug(place);
+  const fallback = getFallbackBySlug(urlSlug);
 
   try {
-    const [live, pollen] = await Promise.all([
-      fetchLiveWeather(safePlace),
-      fetchPollenForecast(safePlace)
+    state.activePlace = place;
+    const [forecastJson, pollenData] = await Promise.all([
+      fetchForecastJson(place),
+      fetchPollenData(place)
     ]);
-
     if (token !== state.renderToken) return;
 
-    updateMetaDescription(safePlace, live.current);
-    setUpdatedAt(new Date());
-    renderCurrentConditions(live, refs);
-    renderInsights(live, refs);
-    renderHourly(live, refs);
-    renderUv(live, refs);
-    renderPollen(pollen, refs);
-    renderDaily(live, refs);
-  } catch (error) {
+    const liveData = buildRenderPayloadFromLive(place, forecastJson, pollenData);
+    renderDataForPlace(place, liveData, urlSlug, updateHistory);
+  } catch {
     if (token !== state.renderToken) return;
-    renderDemo(safePlace);
-  } finally {
-    if (token === state.renderToken) setLoadingState(false);
+    const demoPayload = buildDemoRenderPayload(place, fallback);
+    renderDataForPlace(place, demoPayload, urlSlug, updateHistory);
+    setText('heroLead', 'Liveprognosen kunde inte hämtas just nu. Visar reservdata.');
   }
+}
+
+function initExpandableFooter() {
+  document.querySelectorAll('.footer-panel .expand-toggle').forEach((button) => {
+    button.addEventListener('click', () => {
+      const panel = button.closest('.footer-panel');
+      const isOpen = panel.classList.toggle('is-open');
+      button.setAttribute('aria-expanded', String(isOpen));
+    });
+  });
+}
+
+function initSaveAppPrompt() {
+  const button = document.getElementById('saveAppButton');
+  if (!button) return;
+  button.addEventListener('click', () => {
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const text = isIOS
+      ? 'Öppna Dela-menyn i Safari och välj "Lägg till på hemskärmen".'
+      : 'Öppna webbläsarens meny och välj "Lägg till på hemskärmen".';
+    window.alert(text);
+  });
+}
+
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
 }
 
 async function initSearch() {
   const input = document.getElementById('searchInput');
   const resultsEl = document.getElementById('searchResults');
-
   await window.KlySwedenSearch.loadPlaces([
     './resources/sweden-places.json',
     './resources/sweden-local-areas-seed.json',
     './resources/sweden-local-areas-backlog.json',
     './resources/places-abroad-seed.json'
   ]);
-
   state.places = window.KlySwedenSearch.getPlaces().filter((place) => !place.search_hidden);
   state.placeIndex = buildPlaceIndex(state.places);
 
@@ -1713,37 +1579,6 @@ async function initSearch() {
   }
 }
 
-function initExpandableFooter() {
-  document.querySelectorAll('[data-expand-toggle]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const panel = button.closest('.footer-panel');
-      if (!panel) return;
-      const expanded = panel.classList.toggle('is-open');
-      button.setAttribute('aria-expanded', String(expanded));
-    });
-  });
-}
-
-function initSaveAppPrompt() {
-  const promptButton = document.getElementById('saveAppButton');
-  if (!promptButton) return;
-
-  promptButton.addEventListener('click', () => {
-    const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-    const message = isIOS
-      ? 'Lägg till Kly på hemskärmen via Dela-knappen i Safari.'
-      : 'Lägg till Kly på hemskärmen via webbläsarens meny.';
-    window.alert(message);
-  });
-}
-
-function registerServiceWorker() {
-  if (!('serviceWorker' in navigator)) return;
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  });
-}
-
 window.addEventListener('resize', updateStickyOffset);
 window.addEventListener('popstate', () => {
   const nextPlace = resolvePlaceFromSlug(getInitialSlug());
@@ -1757,6 +1592,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const initialSlug = getInitialSlug();
   const initialPlace = initialSlug === 'stockholm' ? DEFAULT_PLACE : resolvePlaceFromSlug(initialSlug);
+
   renderPlace(initialPlace, false);
   initSearch();
 });
